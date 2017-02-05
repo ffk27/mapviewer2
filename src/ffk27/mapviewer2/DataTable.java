@@ -7,6 +7,15 @@ public abstract class DataTable {
     protected String[] columnNames;
     protected String[] columnTypes;
 
+    public boolean columnNameExist(String columnName) {
+        for (int i=0; i<columnNames.length; i++) {
+            if (columnNames[i].equals(columnName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public String toString() {
         String string = "";
