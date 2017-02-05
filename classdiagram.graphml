@@ -286,10 +286,10 @@ fill : Color, line Color, stroke Stroke)</y:MethodLabel>
       <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="58.0" width="195.25" x="121.16737266887708" y="-809.0779958333335"/>
+          <y:Geometry height="170.8666666666668" width="195.25" x="193.65978048137697" y="-996.1573640094194"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="67.552734375" x="63.8486328125" y="3.0">MapModel<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="59.62451171875" x="67.812744140625" y="3.0">MapView<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -297,7 +297,14 @@ fill : Color, line Color, stroke Stroke)</y:MethodLabel>
             </y:ModelParameter>
           </y:NodeLabel>
           <y:UML clipContent="true" constraint="" omitDetails="false" stereotype="" use3DEffect="true">
-            <y:AttributeLabel>renderRules : List&lt;RenderRules&gt;</y:AttributeLabel>
+            <y:AttributeLabel>+ mapCenter : Coordinate 
++ zoomLevel : float 
++ minZoomlevel : float
++ maxZoomlevel : float
++ zoomSpeed : float
++ scale : double
++ srid : int
+- renderRules : list&lt;RenderRule&gt;</y:AttributeLabel>
             <y:MethodLabel/>
           </y:UML>
         </y:UMLClassNode>
