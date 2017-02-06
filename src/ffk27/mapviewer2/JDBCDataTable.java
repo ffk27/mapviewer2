@@ -17,6 +17,14 @@ public class JDBCDataTable extends DataTable {
         recieveColumns();
     }
 
+    public JDBCConnection getJdbcConnection() {
+        return jdbcConnection;
+    }
+
+    public String getTableName() {
+        return tableName;
+    }
+
     private void recieveColumns() {
         try {
             Statement stmt = jdbcConnection.getConnection().createStatement();

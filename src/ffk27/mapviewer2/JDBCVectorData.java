@@ -16,4 +16,12 @@ public class JDBCVectorData extends GeoDataSource {
             throw new Exception("Geometry column does not exist");
         }
     }
+
+    public JDBCDataTable getJdbcDataTable() {
+        return jdbcDataTable;
+    }
+
+    public String getGeometryColumn() {
+        return geometryColumn;
+    }
 }

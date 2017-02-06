@@ -9,9 +9,10 @@ import java.util.Random;
  * Created by Gebruiker on 2/5/2017.
  */
 public class VectorRenderRule extends RenderRule {
-    protected String[] attributes;
-    protected String statement;
-    protected List<Style> styles;
+    private String[] attributes;
+    private String statement;
+    private List<Style> styles;
+    private int geomType;
 
     public String[] getAttributes() {
         return attributes;
@@ -35,6 +36,14 @@ public class VectorRenderRule extends RenderRule {
 
     public void setStyles(List<Style> styles) {
         this.styles = styles;
+    }
+
+    public int getGeomType() {
+        return geomType;
+    }
+
+    public void setGeomType(int geomType) {
+        this.geomType = geomType;
     }
 
     public static VectorRenderRule createRandom(JDBCVectorData vectorData) {
