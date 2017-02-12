@@ -67,7 +67,6 @@ url : String, properties : Properties)
     </node>
     <node id="n2">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
           <y:Geometry height="127.0625" width="234.1249999999999" x="-200.7546874999996" y="-487.6875"/>
@@ -91,7 +90,6 @@ url : String, properties : Properties)
     </node>
     <node id="n3">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
           <y:Geometry height="107.0" width="300.5" x="-233.94218749999965" y="-287.3125"/>
@@ -115,7 +113,6 @@ tableName : String)</y:MethodLabel>
     </node>
     <node id="n4">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
           <y:Geometry height="76.75" width="195.25" x="-428.35937499999966" y="-487.6875"/>
@@ -138,7 +135,6 @@ tableName : String)</y:MethodLabel>
     </node>
     <node id="n5">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
           <y:Geometry height="120.75" width="219.92137831249966" x="-126.53075331249931" y="-638.4375"/>
@@ -163,7 +159,6 @@ tableName : String)</y:MethodLabel>
     </node>
     <node id="n6">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
           <y:Geometry height="137.0" width="205.0" x="167.67812500000048" y="-646.5625"/>
@@ -189,7 +184,6 @@ fill : Color, line Color, stroke Stroke)</y:MethodLabel>
     </node>
     <node id="n7">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
           <y:Geometry height="58.0" width="100.0" x="350.1781250000005" y="-437.375"/>
@@ -211,7 +205,6 @@ fill : Color, line Color, stroke Stroke)</y:MethodLabel>
     </node>
     <node id="n8">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
           <y:Geometry height="76.75" width="100.0" x="220.17812500000048" y="-437.375"/>
@@ -234,20 +227,19 @@ fill : Color, line Color, stroke Stroke)</y:MethodLabel>
     </node>
     <node id="n9">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="28.0" width="100.0" x="103.9281250000007" y="-438.15625"/>
+          <y:Geometry height="58.78125" width="100.0" x="103.9281250000007" y="-438.15625"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="76.97900390625" x="11.510498046875" y="3.0">EllipseStyle<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="76.97900390625" x="11.510498046875" y="26.701171875">EllipseStyle<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
               <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="-0.03703090122767855" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
             </y:ModelParameter>
           </y:NodeLabel>
-          <y:UML clipContent="true" constraint="" omitDetails="false" stereotype="" use3DEffect="true">
+          <y:UML clipContent="true" constraint="" omitDetails="false" stereotype="todo" use3DEffect="true">
             <y:AttributeLabel/>
             <y:MethodLabel/>
           </y:UML>
@@ -256,13 +248,12 @@ fill : Color, line Color, stroke Stroke)</y:MethodLabel>
     </node>
     <node id="n10">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="170.8666666666668" width="200.84999999999997" x="-150.66299668749997" y="-865.5113291666669"/>
+          <y:Geometry height="227.07382916666688" width="280.84999999999997" x="-156.99506415624947" y="-917.5113291666669"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="76.9599609375" x="61.94501953124998" y="26.701171875">RenderRule<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="76.9599609375" x="101.94501953124998" y="26.701171875">RenderRule<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -276,14 +267,17 @@ fill : Color, line Color, stroke Stroke)</y:MethodLabel>
 # zoommin : float
 # zoommax : float</y:AttributeLabel>
             <y:MethodLabel>- parentDataSource(r : RenderRule) 
-: GeoDataSource</y:MethodLabel>
+: GeoDataSource
++ parseXMLStyle(xml : String, dataSources 
+: List&lt;GeoDataSource&gt;) : RenderRule
+- getStyle(nRule : Node, parent : RenderRule,
+dataSources : List&lt;GeoDataSource&gt;) : RenderRule</y:MethodLabel>
           </y:UML>
         </y:UMLClassNode>
       </data>
     </node>
     <node id="n11">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
           <y:Geometry height="170.8666666666668" width="195.25" x="193.65978048137697" y="-996.1573640094194"/>
@@ -311,7 +305,6 @@ fill : Color, line Color, stroke Stroke)</y:MethodLabel>
       </data>
     </node>
     <edge id="e0" source="n1" target="n3">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -331,7 +324,6 @@ fill : Color, line Color, stroke Stroke)</y:MethodLabel>
       </data>
     </edge>
     <edge id="e1" source="n3" target="n2">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -342,7 +334,6 @@ fill : Color, line Color, stroke Stroke)</y:MethodLabel>
       </data>
     </edge>
     <edge id="e2" source="n4" target="n0">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -353,7 +344,6 @@ fill : Color, line Color, stroke Stroke)</y:MethodLabel>
       </data>
     </edge>
     <edge id="e3" source="n5" target="n5">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="-109.96508700299898" sy="-38.88155640722357" tx="109.94867060508426" ty="3.8978633875161144">
@@ -367,7 +357,6 @@ fill : Color, line Color, stroke Stroke)</y:MethodLabel>
       </data>
     </edge>
     <edge id="e4" source="n4" target="n3">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -378,7 +367,6 @@ fill : Color, line Color, stroke Stroke)</y:MethodLabel>
       </data>
     </edge>
     <edge id="e5" source="n5" target="n6">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -389,7 +377,6 @@ fill : Color, line Color, stroke Stroke)</y:MethodLabel>
       </data>
     </edge>
     <edge id="e6" source="n7" target="n6">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -400,7 +387,6 @@ fill : Color, line Color, stroke Stroke)</y:MethodLabel>
       </data>
     </edge>
     <edge id="e7" source="n8" target="n6">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -411,7 +397,6 @@ fill : Color, line Color, stroke Stroke)</y:MethodLabel>
       </data>
     </edge>
     <edge id="e8" source="n9" target="n6">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -422,7 +407,6 @@ fill : Color, line Color, stroke Stroke)</y:MethodLabel>
       </data>
     </edge>
     <edge id="e9" source="n5" target="n10">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -433,7 +417,6 @@ fill : Color, line Color, stroke Stroke)</y:MethodLabel>
       </data>
     </edge>
     <edge id="e10" source="n10" target="n0">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -444,7 +427,6 @@ fill : Color, line Color, stroke Stroke)</y:MethodLabel>
       </data>
     </edge>
     <edge id="e11" source="n11" target="n10">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>

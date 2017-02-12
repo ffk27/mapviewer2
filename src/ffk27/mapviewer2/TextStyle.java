@@ -18,4 +18,8 @@ public class TextStyle extends Style {
     public String getFormat() {
         return format;
     }
+
+    public Font getFont() {
+        return font;
+    }
 }

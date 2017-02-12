@@ -8,19 +8,20 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.io.IOException;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by ffk27 on 9-8-16.
  */
-public class RenderRule {
+public abstract class RenderRule {
     protected RenderRule parent;
     protected List<RenderRule> rules;
-    private GeoDataSource dataSource;
-    private float zoommin;
-    private float zoommax;
+    protected GeoDataSource dataSource;
+    protected float zoommin;
+    protected float zoommax;
+
+    public abstract void draw(RenderRule renderRule, Graphics2D g2d, MapView mapView);
 
     public RenderRule getParent() {
         return parent;
@@ -93,20 +94,22 @@ public class RenderRule {
         return renderRule;
     }
 
-    public static RenderRule getStyleRule(Node nRule, RenderRule parent, List<GeoDataSource> dataSources) {
-        NamedNodeMap namedNodeMap = nRule.getAttributes();
-        String sourceType = Utils.getAttributeStringValue("sourcetype",namedNodeMap);
+    private static RenderRule getStyleRule(Node nRule, RenderRule parent, List<GeoDataSource> dataSources) {
         RenderRule renderRule=null;
+        NamedNodeMap namedNodeMap = nRule.getAttributes();
+
+        String sourceType = Utils.getAttributeStringValue("sourcetype",namedNodeMap);
+        //currently only jdbcvectorsource supported.
         if (sourceType==null || sourceType.equals("jdbcvector")) {
             renderRule = new VectorRenderRule();
         }
-        else {
-            renderRule=new RenderRule();
-        }
+
         renderRule.setZoommin(Utils.getAttributeFloatValue("zoom-min",namedNodeMap));
         renderRule.setZoommax(Utils.getAttributeFloatValue("zoom-max",namedNodeMap));
+
         String sourceName = Utils.getAttributeStringValue("sourcename",namedNodeMap);
         if (sourceName!=null) {
+            // if sourcename isset, find the matching geodatasource object.
             for (GeoDataSource dataSource : dataSources) {
                 if (dataSource.getName().equals(sourceName)) {
                     renderRule.setDataSource(dataSource);
@@ -114,8 +117,9 @@ public class RenderRule {
                 }
             }
         }
+
         if (parent!=null) {
-            parent.setParent(parent);
+            renderRule.setParent(parent);
         }
         boolean hasChilds=false;
         List<RenderRule> styleRules = null;
@@ -125,7 +129,7 @@ public class RenderRule {
                 if (styleRules==null) {
                     styleRules = new ArrayList<>();
                 }
-                RenderRule  sc = getStyleRule(nRule.getChildNodes().item(i),renderRule,dataSources);
+                RenderRule sc = getStyleRule(nRule.getChildNodes().item(i),renderRule,dataSources);
                 if (sc!=null) {
                     styleRules.add(sc);
                 }
@@ -133,7 +137,7 @@ public class RenderRule {
         }
         renderRule.setRules(styleRules);
 
-        if (sourceType==null || sourceType.equals("jdbcvector")) {
+        if (renderRule instanceof VectorRenderRule) {
             VectorRenderRule vectorRenderRule = (VectorRenderRule)renderRule;
 
             String attrs = Utils.getAttributeStringValue("attributes",namedNodeMap);
@@ -176,9 +180,17 @@ public class RenderRule {
                     else if (nodename.equals("text")) {
                         String format = Utils.getAttributeStringValue("format",attributes);
                         String fontfamily = Utils.getAttributeStringValue("font-family",attributes);
-                        String fontsize = Utils.getAttributeStringValue("font-size",attributes);
-                        //TODO parse font
-                        vectorRenderRule.getStyles().add(new TextStyle(vectorRenderRule,fill,line,stroke,format,null));
+                        String fontstyle = Utils.getAttributeStringValue("font-style",attributes);
+                        int fstyle=0;
+                        if (fontstyle.contains("bold")) {
+                            fstyle=fstyle|Font.BOLD;
+                        }
+                        if (fontstyle.contains("italic")) {
+                            fstyle=fstyle|Font.ITALIC;
+                        }
+                        int fontsize = Utils.getAttributeIntValue("font-size",attributes);
+                        Font font = new Font(fontfamily,fstyle,fontsize);
+                        vectorRenderRule.getStyles().add(new TextStyle(vectorRenderRule,fill,line,stroke,format,font));
                     }
                 }
             }
