@@ -314,13 +314,12 @@ g2d : Graphics2D) : void</y:MethodLabel>
     </node>
     <node id="n12">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="28.0" width="100.0" x="-661.598020333334" y="-551.297850933331"/>
+          <y:Geometry height="76.75" width="114.0" x="-661.598020333334" y="-551.297850933331"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="54.57177734375" x="22.714111328125" y="3.0">TileData<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="54.57177734375" x="29.714111328125" y="3.0">TileData<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -328,8 +327,8 @@ g2d : Graphics2D) : void</y:MethodLabel>
             </y:ModelParameter>
           </y:NodeLabel>
           <y:UML clipContent="true" constraint="" omitDetails="false" stereotype="" use3DEffect="true">
-            <y:AttributeLabel/>
-            <y:MethodLabel/>
+            <y:AttributeLabel>- urlformat : String</y:AttributeLabel>
+            <y:MethodLabel>+ getTile : Image</y:MethodLabel>
           </y:UML>
         </y:UMLClassNode>
       </data>
@@ -467,7 +466,6 @@ g2d : Graphics2D) : void</y:MethodLabel>
       </data>
     </edge>
     <edge id="e12" source="n12" target="n0">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>

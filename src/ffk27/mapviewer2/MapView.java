@@ -98,6 +98,8 @@ public class MapView extends JPanel {
         for (RenderRule renderRule : renderRules) {
             drawAllRules(renderRule,(Graphics2D)g);
         }
+        TileData osmt = new TileData("Openstreetmap Transport","http://[a-c].tile.thunderforest.com/transport/{z}/{x}/{y}.png");
+        g.drawImage(osmt.getTile(0,0,0),0,0,null);
     }
 
     private void drawAllRules(RenderRule renderRule, Graphics2D g2d) {
