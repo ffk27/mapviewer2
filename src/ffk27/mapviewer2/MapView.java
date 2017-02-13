@@ -86,6 +86,10 @@ public class MapView extends JPanel {
         return renderRules;
     }
 
+    public void setRenderRules(List<RenderRule> renderRules) {
+        this.renderRules = renderRules;
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

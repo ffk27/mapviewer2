@@ -137,10 +137,10 @@ tableName : String)</y:MethodLabel>
       <data key="d4"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="120.75" width="219.92137831249966" x="-126.53075331249931" y="-638.4375"/>
+          <y:Geometry height="197.1339999999999" width="256.5880449791663" x="-144.86408664583263" y="-730.1041666666667"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="117.419921875" x="51.25072821874983" y="3.0">VectorRenderRule<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="117.419921875" x="69.58406155208314" y="3.0">VectorRenderRule<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -152,7 +152,12 @@ tableName : String)</y:MethodLabel>
 - statement : String[]
 - styles : List&lt;Style&gt;</y:AttributeLabel>
             <y:MethodLabel>+ createRandom(jdbcVectorData 
-: JDBCVectorData) : VectorRenderRule</y:MethodLabel>
+: JDBCVectorData) : VectorRenderRule
++ draw() : void
+- drawGeom() : void
+- drawGraphics : void
+- getAllStatements() : String[]
+- getAllAttributes() : String[]</y:MethodLabel>
           </y:UML>
         </y:UMLClassNode>
       </data>
@@ -161,7 +166,7 @@ tableName : String)</y:MethodLabel>
       <data key="d4"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="137.0" width="205.0" x="167.67812500000048" y="-646.5625"/>
+          <y:Geometry height="137.0" width="205.0" x="167.67812500000048" y="-700.0371666666667"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="35.07177734375" x="84.964111328125" y="3.0">Style<y:LabelModel>
@@ -186,7 +191,7 @@ fill : Color, line Color, stroke Stroke)</y:MethodLabel>
       <data key="d4"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="58.0" width="100.0" x="350.1781250000005" y="-437.375"/>
+          <y:Geometry height="58.0" width="100.0" x="350.1781250000005" y="-487.6875"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="71.20263671875" x="14.398681640625" y="3.0">CircleStyle<y:LabelModel>
@@ -207,7 +212,7 @@ fill : Color, line Color, stroke Stroke)</y:MethodLabel>
       <data key="d4"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="76.75" width="100.0" x="220.17812500000048" y="-437.375"/>
+          <y:Geometry height="76.75" width="100.0" x="220.17812500000048" y="-487.6875"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="61.8017578125" x="19.09912109375" y="3.0">TextStyle<y:LabelModel>
@@ -229,7 +234,7 @@ fill : Color, line Color, stroke Stroke)</y:MethodLabel>
       <data key="d4"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="58.78125" width="100.0" x="103.9281250000007" y="-438.15625"/>
+          <y:Geometry height="58.78125" width="100.0" x="103.9281250000007" y="-488.46875"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="76.97900390625" x="11.510498046875" y="26.701171875">EllipseStyle<y:LabelModel>
@@ -250,7 +255,7 @@ fill : Color, line Color, stroke Stroke)</y:MethodLabel>
       <data key="d4"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="227.07382916666688" width="280.84999999999997" x="-156.99506415624947" y="-917.5113291666669"/>
+          <y:Geometry height="227.07382916666688" width="280.84999999999997" x="-156.99506415624947" y="-996.1573640094194"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="76.9599609375" x="101.94501953124998" y="26.701171875">RenderRule<y:LabelModel>
@@ -280,10 +285,10 @@ dataSources : List&lt;GeoDataSource&gt;) : RenderRule</y:MethodLabel>
       <data key="d4"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="170.8666666666668" width="195.25" x="193.65978048137697" y="-996.1573640094194"/>
+          <y:Geometry height="222.74933333333342" width="232.11400000000003" x="250.3264471480436" y="-1106.1573640094193"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="59.62451171875" x="67.812744140625" y="3.0">MapView<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="59.62451171875" x="86.24474414062502" y="3.0">MapView<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -291,14 +296,39 @@ dataSources : List&lt;GeoDataSource&gt;) : RenderRule</y:MethodLabel>
             </y:ModelParameter>
           </y:NodeLabel>
           <y:UML clipContent="true" constraint="" omitDetails="false" stereotype="" use3DEffect="true">
-            <y:AttributeLabel>+ mapCenter : Coordinate 
-+ zoomLevel : float 
+            <y:AttributeLabel>- mapCenter : Coordinate 
+- zoomLevel : float 
 + minZoomlevel : float
 + maxZoomlevel : float
 + zoomSpeed : float
-+ scale : double
-+ srid : int
-- renderRules : list&lt;RenderRule&gt;</y:AttributeLabel>
+- scale : double
+- unitSize : double
+- srid : int
+- renderRules : list&lt;RenderRule&gt;
+- centerPoint : Point</y:AttributeLabel>
+            <y:MethodLabel>- drawAllRules(renderRule : RenderRule,
+g2d : Graphics2D) : void</y:MethodLabel>
+          </y:UML>
+        </y:UMLClassNode>
+      </data>
+    </node>
+    <node id="n12">
+      <data key="d4"/>
+      <data key="d5"/>
+      <data key="d6">
+        <y:UMLClassNode>
+          <y:Geometry height="28.0" width="100.0" x="-661.598020333334" y="-551.297850933331"/>
+          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="54.57177734375" x="22.714111328125" y="3.0">TileData<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="-0.03703090122767855" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:UML clipContent="true" constraint="" omitDetails="false" stereotype="" use3DEffect="true">
+            <y:AttributeLabel/>
             <y:MethodLabel/>
           </y:UML>
         </y:UMLClassNode>
@@ -346,9 +376,9 @@ dataSources : List&lt;GeoDataSource&gt;) : RenderRule</y:MethodLabel>
     <edge id="e3" source="n5" target="n5">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="-109.96508700299898" sy="-38.88155640722357" tx="109.94867060508426" ty="3.8978633875161144">
-            <y:Point x="-158.15312499999948" y="-616.9440564072236"/>
-            <y:Point x="-158.15312499999948" y="-574.1646366124838"/>
+          <y:Path sx="-128.29915357282817" sy="-63.47724008928852" tx="128.28000013045317" ty="6.363572679375571">
+            <y:Point x="-176.4864583333328" y="-695.0144067559553"/>
+            <y:Point x="-176.4864583333328" y="-625.1735939872912"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="standard" target="standard"/>
@@ -432,6 +462,17 @@ dataSources : List&lt;GeoDataSource&gt;) : RenderRule</y:MethodLabel>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="plain"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e12" source="n12" target="n0">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="white_delta"/>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
       </data>

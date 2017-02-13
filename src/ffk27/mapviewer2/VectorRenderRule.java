@@ -21,115 +21,89 @@ import java.util.Random;
  */
 public class VectorRenderRule extends RenderRule {
     private String[] attributes;
-    private String statement;
+    private String[] statement;
     private List<Style> styles;
     private int geomType;
 
     @Override
     public void draw(RenderRule renderRule, Graphics2D g2d, MapView mapView) {
-        try {
-            if (zoommin > zoommax) {
-                zoommax=mapView.maxZoomlevel;
-            }
-            if ((zoommin == 0 && zoommax == 0) || (mapView.getZoomLevel() >= zoommin && mapView.getZoomLevel() <= zoommax)) {
-                if (((VectorRenderRule)renderRule).getStyles().size()>0) {
-                    JDBCVectorData jdbcVectorData = (JDBCVectorData)renderRule.getDataSource();
-                    JDBCConnection.DBType dbType = jdbcVectorData.getJdbcDataTable().getJdbcConnection().getDbType();
-                    String geometry_column = jdbcVectorData.getGeometryColumn();
-                    BoundingBox boundingb = mapView.getBoundingBox();
-                    double minX = boundingb.getMinX();
-                    double minY = boundingb.getMinY();
-                    double maxX = boundingb.getMaxX();
-                    double maxY = boundingb.getMaxY();
-                    com.vividsolutions.jts.geom.Polygon bboxG = new GeometryFactory().createPolygon(new Coordinate[]{new Coordinate(minX, maxY), new Coordinate(maxX, maxY), new Coordinate(maxX, minY), new Coordinate(minX, minY), new Coordinate(minX, maxY)});
-                    String attributes = "";
-                    String[] attrarray = getAllAttributes((VectorRenderRule)renderRule, null);
-                    if (attrarray != null && attrarray.length > 0) {
-                        for (String attribute : attrarray) {
-                            attributes += "," + attribute;
-                        }
-                    }
-                    String bbox = "ST_Transform(ST_GeomFromText('" + bboxG.toText() + "'," + mapView.getSrid() + ")," + mapView.getSrid() + ")";
-                    String query = "SELECT ST_AsBinary(ST_Transform(" + geometry_column + "," + mapView.getSrid() + ")) " + attributes + " FROM " + jdbcVectorData.getJdbcDataTable().getTableName() + " WHERE ";
-                    if (dbType == JDBCConnection.DBType.H2 || dbType == JDBCConnection.DBType.PostgreSQL) {
-                        query += geometry_column + " && " + bbox;
-                    } else if (dbType == JDBCConnection.DBType.SQLite) {
-                        query += "ROWID IN (SELECT ROWID FROM SpatialIndex WHERE f_table_name='" + jdbcVectorData.getJdbcDataTable().getTableName() + "' AND f_geometry_column='" + geometry_column + "' AND search_frame=" + bbox + ")";
-                    }
-                    if (dbType == JDBCConnection.DBType.H2 || dbType == JDBCConnection.DBType.SQLite) {
-                        query += " AND (ST_Intersects(" + geometry_column + "," + bbox + "))";
-                    }
-                    if (((VectorRenderRule)renderRule).getGeomType() != 0) {
-                        query += " AND ST_GeometryType(" + geometry_column + ")='";
-                        String gtype = Utils.geomTypeCode2Name(((VectorRenderRule)renderRule).getGeomType());
-                        if (dbType == JDBCConnection.DBType.PostgreSQL) {
-                            query += "ST_";
-                        } else if (dbType == JDBCConnection.DBType.SQLite) {
-                            gtype = gtype.toUpperCase();
-                        }
-                        query += gtype + "'";
-                    }
-                    query += getAllStatements((VectorRenderRule)renderRule, "");
-                    query += ";";
-                    System.out.println(query);
-
-                    Statement stmt = jdbcVectorData.getJdbcDataTable().getJdbcConnection().getConnection().createStatement();
-                    ResultSet rs = stmt.executeQuery(query);
-                    while (rs.next()) {
-                        String[] labels = null;
-                        String[] attrs = getAllAttributes((VectorRenderRule)renderRule, null);
-                        if (attrs != null && attrs.length > 0) {
-                            labels = new String[attrs.length];
-                            for (int i = 0; i < attrs.length; i++) {
-                                labels[i] = rs.getString(i + 2);
+        if (zoommin > zoommax) {
+            zoommax=mapView.maxZoomlevel;
+        }
+        if ((zoommin == 0 && zoommax == 0) || (mapView.getZoomLevel() >= zoommin && mapView.getZoomLevel() <= zoommax)) {
+            if (((VectorRenderRule)renderRule).getStyles().size()>0) {
+                JDBCVectorData jdbcVectorData = (JDBCVectorData) renderRule.getDataSource();
+                if (jdbcVectorData != null) {
+                    try {
+                        JDBCConnection.DBType dbType = jdbcVectorData.getJdbcDataTable().getJdbcConnection().getDbType();
+                        String geometry_column = jdbcVectorData.getGeometryColumn();
+                        BoundingBox boundingb = mapView.getBoundingBox();
+                        double minX = boundingb.getMinX();
+                        double minY = boundingb.getMinY();
+                        double maxX = boundingb.getMaxX();
+                        double maxY = boundingb.getMaxY();
+                        com.vividsolutions.jts.geom.Polygon bboxG = new GeometryFactory().createPolygon(new Coordinate[]{new Coordinate(minX, maxY), new Coordinate(maxX, maxY), new Coordinate(maxX, minY), new Coordinate(minX, minY), new Coordinate(minX, maxY)});
+                        String attributes = "";
+                        String[] attrarray = ((VectorRenderRule) renderRule).getAttributes();
+                        if (attrarray != null && attrarray.length > 0) {
+                            for (String attribute : attrarray) {
+                                attributes += "," + attribute;
                             }
                         }
-                        drawGeom(new WKBReader().read(rs.getBytes(1)), (VectorRenderRule)renderRule, labels,g2d,mapView);
+                        String bbox = "ST_Transform(ST_GeomFromText('" + bboxG.toText() + "'," + mapView.getSrid() + ")," + mapView.getSrid() + ")";
+                        String query = "SELECT ST_AsBinary(ST_Transform(" + geometry_column + "," + mapView.getSrid() + ")) " + attributes + " FROM " + jdbcVectorData.getJdbcDataTable().getTableName() + " WHERE ";
+                        if (dbType == JDBCConnection.DBType.H2 || dbType == JDBCConnection.DBType.PostgreSQL) {
+                            query += geometry_column + " && " + bbox;
+                        } else if (dbType == JDBCConnection.DBType.SQLite) {
+                            query += "ROWID IN (SELECT ROWID FROM SpatialIndex WHERE f_table_name='" + jdbcVectorData.getJdbcDataTable().getTableName() + "' AND f_geometry_column='" + geometry_column + "' AND search_frame=" + bbox + ")";
+                        }
+                        if (dbType == JDBCConnection.DBType.H2 || dbType == JDBCConnection.DBType.SQLite) {
+                            query += " AND (ST_Intersects(" + geometry_column + "," + bbox + "))";
+                        }
+                        if (((VectorRenderRule) renderRule).getGeomType() != 0) {
+                            query += " AND ST_GeometryType(" + geometry_column + ")='";
+                            String gtype = Utils.geomTypeCode2Name(((VectorRenderRule) renderRule).getGeomType());
+                            if (dbType == JDBCConnection.DBType.PostgreSQL) {
+                                query += "ST_";
+                            } else if (dbType == JDBCConnection.DBType.SQLite) {
+                                gtype = gtype.toUpperCase();
+                            }
+                            query += gtype + "'";
+                        }
+                        if (((VectorRenderRule) renderRule).getStatement()!=null) {
+                            for (String stmt : ((VectorRenderRule) renderRule).getStatement()) {
+                                query += " AND (" + stmt + ")";
+                            }
+                        }
+                        query += ";";
+                        System.out.println(query);
+
+                        Statement stmt = jdbcVectorData.getJdbcDataTable().getJdbcConnection().getConnection().createStatement();
+                        ResultSet rs = stmt.executeQuery(query);
+                        while (rs.next()) {
+                            String[] labels = null;
+                            if (attrarray != null && attrarray.length > 0) {
+                                labels = new String[attrarray.length];
+                                for (int i = 0; i < attrarray.length; i++) {
+                                    labels[i] = rs.getString(i + 2);
+                                }
+                            }
+                            drawGeom(new WKBReader().read(rs.getBytes(1)), (VectorRenderRule) renderRule, labels, g2d, mapView);
+                        }
+                        rs.close();
+                        stmt.close();
                     }
-                    rs.close();
-                    stmt.close();
+                    catch (SQLException se) {
+                        se.printStackTrace();
+                    } catch (ParseException pe) {
+                        pe.printStackTrace();
+                    }
+                }
+                else {
+                    System.out.println("Error: No or invalid data source");
                 }
             }
-        } catch (SQLException se) {
-            se.printStackTrace();
-        } catch (ParseException pe) {
-            pe.printStackTrace();
         }
-    }
-
-    private String getAllStatements(VectorRenderRule vectorRenderRule, String statement) {
-        if (vectorRenderRule.getStatement()!=null) {
-            statement = " AND (" + vectorRenderRule.getStatement() + ")" + statement;
-        }
-        if (vectorRenderRule.getParent()!=null) {
-            statement = getAllStatements((VectorRenderRule)vectorRenderRule.getParent(),statement);
-        }
-        return statement;
-    }
-
-    private String[] getAllAttributes(VectorRenderRule vectorRenderRule, String attributes[]) {
-        String[] attrs=null;
-        if (vectorRenderRule.getAttributes()!=null) {
-            if (attributes != null) {
-                attrs=new String[vectorRenderRule.getAttributes().length+attributes.length];
-                for (int i=0; i< vectorRenderRule.getAttributes().length; i++) {
-                    attrs[i]=vectorRenderRule.getAttributes()[i];
-                }
-                for (int i=vectorRenderRule.getAttributes().length; i<vectorRenderRule.getAttributes().length+attributes.length; i++) {
-                    attrs[i]=attributes[i-vectorRenderRule.getAttributes().length];
-                }
-            }
-            else {
-                attrs = vectorRenderRule.getAttributes();
-            }
-        }
-        else if (attributes!=null) {
-            attrs=attributes;
-        }
-        if (vectorRenderRule.getParent()!=null) {
-            attrs = getAllAttributes((VectorRenderRule)vectorRenderRule.getParent(),attrs);
-        }
-        return attrs;
     }
 
     private void drawGeom(Geometry g, VectorRenderRule renderRule, String[] labels, Graphics2D g2d, MapView mapView) {
@@ -196,7 +170,7 @@ public class VectorRenderRule extends RenderRule {
             if (((TextStyle)style).getFormat()!=null && !((TextStyle)style).getFormat().isEmpty()) {
                 String[] texts = ((TextStyle) style).getFormat().split("\\\\n");
                 for (int i=0; i<texts.length; i++) {
-                    String[] attrs = getAllAttributes(style.getStyleRule(),null);
+                    String[] attrs = style.getStyleRule().getAttributes();
                     for (int i2 = 0; i2 < attrs.length; i2++) {
                         String attrname = attrs[i2];
                         if (texts[i].contains("{" + attrname + "}")) {
@@ -246,11 +220,11 @@ public class VectorRenderRule extends RenderRule {
         this.attributes = attributes;
     }
 
-    public String getStatement() {
+    public String[] getStatement() {
         return statement;
     }
 
-    public void setStatement(String statement) {
+    public void setStatement(String[] statement) {
         this.statement = statement;
     }
 

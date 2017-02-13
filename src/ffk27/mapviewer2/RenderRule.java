@@ -56,9 +56,6 @@ public abstract class RenderRule {
     }
 
     public GeoDataSource getDataSource() {
-        if (dataSource==null && parent!=null) {
-            return parentDataSource(parent);
-        }
         return dataSource;
     }
 
@@ -66,7 +63,7 @@ public abstract class RenderRule {
         this.dataSource = dataSource;
     }
 
-    private GeoDataSource parentDataSource(RenderRule renderRule) {
+    private static GeoDataSource parentDataSource(RenderRule renderRule) {
         if (renderRule.dataSource!=null) {
             return renderRule.dataSource;
         }
@@ -76,12 +73,17 @@ public abstract class RenderRule {
         return null;
     }
 
-    public static RenderRule parseXMLStyle(String xml, List<GeoDataSource> dataSources) {
-        RenderRule renderRule = null;
+    public static List<RenderRule> parseXMLStyle(String xml, List<GeoDataSource> dataSources) {
+        List<RenderRule> renderRules = new ArrayList<>();
         try {
             Document doc = Utils.loadXMLFromString(xml);
             Node nRule = doc.getFirstChild();
-            renderRule = getStyleRule(nRule,null, dataSources);
+            for (int i=0; i<nRule.getChildNodes().getLength(); i++) {
+                Node child = nRule.getChildNodes().item(i);
+                if (child.getNodeName().equals("rule")) {
+                    renderRules.add(getStyleRule(child,null, dataSources));
+                }
+            }
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
         } catch (SAXException e) {
@@ -91,7 +93,7 @@ public abstract class RenderRule {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return renderRule;
+        return renderRules;
     }
 
     private static RenderRule getStyleRule(Node nRule, RenderRule parent, List<GeoDataSource> dataSources) {
@@ -102,6 +104,10 @@ public abstract class RenderRule {
         //currently only jdbcvectorsource supported.
         if (sourceType==null || sourceType.equals("jdbcvector")) {
             renderRule = new VectorRenderRule();
+        }
+
+        if (parent!=null) {
+            renderRule.setParent(parent);
         }
 
         renderRule.setZoommin(Utils.getAttributeFloatValue("zoom-min",namedNodeMap));
@@ -116,35 +122,27 @@ public abstract class RenderRule {
                     break;
                 }
             }
-        }
-
-        if (parent!=null) {
-            renderRule.setParent(parent);
-        }
-        boolean hasChilds=false;
-        List<RenderRule> styleRules = null;
-        for (int i=0; i<nRule.getChildNodes().getLength(); i++) {
-            if (nRule.getChildNodes().item(i).getNodeName()=="rule") {
-                hasChilds=true;
-                if (styleRules==null) {
-                    styleRules = new ArrayList<>();
-                }
-                RenderRule sc = getStyleRule(nRule.getChildNodes().item(i),renderRule,dataSources);
-                if (sc!=null) {
-                    styleRules.add(sc);
-                }
+            if (renderRule.getDataSource()==null) {
+                System.out.println("Error: source "+sourceName+" unknown!");
             }
+        } else {
+            renderRule.setDataSource(parentDataSource(renderRule));
         }
-        renderRule.setRules(styleRules);
 
         if (renderRule instanceof VectorRenderRule) {
             VectorRenderRule vectorRenderRule = (VectorRenderRule)renderRule;
-
-            String attrs = Utils.getAttributeStringValue("attributes",namedNodeMap);
-            if (attrs!=null && !attrs.isEmpty()) {
-                vectorRenderRule.setAttributes(attrs.split(","));
+            String attrstring = Utils.getAttributeStringValue("attributes",namedNodeMap);
+            String[] attrs = null;
+            if (attrstring!=null) {
+                attrs=attrstring.split(",");
             }
-            vectorRenderRule.setStatement(Utils.getAttributeStringValue("stmt",namedNodeMap));
+            vectorRenderRule.setAttributes(getAllAttributes((VectorRenderRule)vectorRenderRule.getParent(),attrs));
+            String stmt = Utils.getAttributeStringValue("stmt",namedNodeMap);
+            String[] stmts = null;
+            if (stmt!=null) {
+                stmts=new String[]{stmt};
+            }
+            vectorRenderRule.setStatement(getAllStatements((VectorRenderRule)vectorRenderRule.getParent(),stmts));
 
             for (int i=0; i<nRule.getChildNodes().getLength(); i++) {
                 if (vectorRenderRule.getStyles()==null) {
@@ -194,8 +192,75 @@ public abstract class RenderRule {
                     }
                 }
             }
-            return vectorRenderRule;
         }
+        boolean hasChilds=false;
+        List<RenderRule> styleRules = null;
+        for (int i=0; i<nRule.getChildNodes().getLength(); i++) {
+            if (nRule.getChildNodes().item(i).getNodeName()=="rule") {
+                hasChilds=true;
+                if (styleRules==null) {
+                    styleRules = new ArrayList<>();
+                }
+                RenderRule sc = getStyleRule(nRule.getChildNodes().item(i),renderRule,dataSources);
+                if (sc!=null) {
+                    styleRules.add(sc);
+                }
+            }
+        }
+        renderRule.setRules(styleRules);
+
         return renderRule;
+    }
+
+    private static String[] getAllStatements(VectorRenderRule vectorRenderRule, String statements[]) {
+        if (vectorRenderRule!=null) {
+            String[] stmts = null;
+            if (vectorRenderRule.getStatement() != null) {
+                if (statements != null) {
+                    stmts = new String[vectorRenderRule.getStatement().length + statements.length];
+                    for (int i = 0; i < vectorRenderRule.getStatement().length; i++) {
+                        stmts[i] = vectorRenderRule.getStatement()[i];
+                    }
+                    for (int i = vectorRenderRule.getStatement().length; i < vectorRenderRule.getStatement().length + statements.length; i++) {
+                        stmts[i] = statements[i - vectorRenderRule.getStatement().length];
+                    }
+                } else {
+                    stmts = vectorRenderRule.getStatement();
+                }
+            } else if (statements != null) {
+                stmts = statements;
+            }
+            if (vectorRenderRule.getParent() != null) {
+                stmts = getAllAttributes((VectorRenderRule) vectorRenderRule.getParent(), stmts);
+            }
+            return stmts;
+        }
+        return statements;
+    }
+
+    private static String[] getAllAttributes(VectorRenderRule vectorRenderRule, String attributes[]) {
+        if (vectorRenderRule!=null) {
+            String[] attrs = null;
+            if (vectorRenderRule.getAttributes() != null) {
+                if (attributes != null) {
+                    attrs = new String[vectorRenderRule.getAttributes().length + attributes.length];
+                    for (int i = 0; i < vectorRenderRule.getAttributes().length; i++) {
+                        attrs[i] = vectorRenderRule.getAttributes()[i];
+                    }
+                    for (int i = vectorRenderRule.getAttributes().length; i < vectorRenderRule.getAttributes().length + attributes.length; i++) {
+                        attrs[i] = attributes[i - vectorRenderRule.getAttributes().length];
+                    }
+                } else {
+                    attrs = vectorRenderRule.getAttributes();
+                }
+            } else if (attributes != null) {
+                attrs = attributes;
+            }
+            if (vectorRenderRule.getParent() != null) {
+                attrs = getAllAttributes((VectorRenderRule) vectorRenderRule.getParent(), attrs);
+            }
+            return attrs;
+        }
+        return attributes;
     }
 }
