@@ -21,7 +21,7 @@ public class Controller implements MouseListener, MouseMotionListener, MouseWhee
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        System.out.println(mapView.pixelsToCoordinate(e.getPoint()));
+        System.out.println(mapView.getViewModel().pixelsToCoordinate(e.getPoint()));
     }
 
     @Override
@@ -48,10 +48,10 @@ public class Controller implements MouseListener, MouseMotionListener, MouseWhee
     public void mouseDragged(MouseEvent e) {
         if (tempP==null) { tempP=e.getPoint(); }
         else {
-            Coordinate tempC = mapView.pixelsToCoordinate(tempP);
-            double difX = mapView.pixelsToCoordinate(e.getPoint()).x-tempC.x;
-            double difY = mapView.pixelsToCoordinate(e.getPoint()).y-tempC.y;
-            mapView.setMapCenter(new Coordinate(mapView.getMapCenter().x-difX,mapView.getMapCenter().y-difY));
+            Coordinate tempC = mapView.getViewModel().pixelsToCoordinate(tempP);
+            double difX = mapView.getViewModel().pixelsToCoordinate(e.getPoint()).x-tempC.x;
+            double difY = mapView.getViewModel().pixelsToCoordinate(e.getPoint()).y-tempC.y;
+            mapView.changeMapCenter(new Coordinate(mapView.getViewModel().getMapCenter().x-difX,mapView.getViewModel().getMapCenter().y-difY));
             tempP=e.getPoint();
         }
     }
@@ -71,20 +71,20 @@ public class Controller implements MouseListener, MouseMotionListener, MouseWhee
     }
 
     public void zoomIn(Point p) {
-        if (mapView.getZoomLevel()<mapView.maxZoomlevel) {
-            Coordinate c = mapView.pixelsToCoordinate(p);
-            mapView.setZoomLevel(mapView.getZoomLevel()+mapView.zoomSpeed);
-            Coordinate c2 = mapView.pixelsToCoordinate(p);
-            mapView.setMapCenter(new Coordinate(mapView.getMapCenter().x+c.x-c2.x,mapView.getMapCenter().y+c.y-c2.y));
+        if (mapView.getViewModel().getZoomLevel()<mapView.getViewModel().maxZoomlevel) {
+            Coordinate c = mapView.getViewModel().pixelsToCoordinate(p);
+            mapView.getViewModel().setZoomLevel(mapView.getViewModel().getZoomLevel()+mapView.getViewModel().zoomSpeed);
+            Coordinate c2 = mapView.getViewModel().pixelsToCoordinate(p);
+            mapView.changeMapCenter(new Coordinate(mapView.getViewModel().getMapCenter().x+c.x-c2.x,mapView.getViewModel().getMapCenter().y+c.y-c2.y));
         }
     }
 
     public void zoomOut(Point p) {
-        if (mapView.getZoomLevel()>mapView.minZoomlevel) {
-            Coordinate c = mapView.pixelsToCoordinate(p);
-            mapView.setZoomLevel(mapView.getZoomLevel()-mapView.zoomSpeed);
-            Coordinate c2 = mapView.pixelsToCoordinate(p);
-            mapView.setMapCenter(new Coordinate(mapView.getMapCenter().x-(c2.x-c.x),mapView.getMapCenter().y-(c2.y-c.y)));
+        if (mapView.getViewModel().getZoomLevel()>mapView.getViewModel().minZoomlevel) {
+            Coordinate c = mapView.getViewModel().pixelsToCoordinate(p);
+            mapView.getViewModel().setZoomLevel(mapView.getViewModel().getZoomLevel()-mapView.getViewModel().zoomSpeed);
+            Coordinate c2 = mapView.getViewModel().pixelsToCoordinate(p);
+            mapView.changeMapCenter(new Coordinate(mapView.getViewModel().getMapCenter().x-(c2.x-c.x),mapView.getViewModel().getMapCenter().y-(c2.y-c.y)));
         }
     }
 }

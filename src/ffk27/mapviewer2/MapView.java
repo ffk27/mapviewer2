@@ -6,80 +6,61 @@ import javafx.geometry.BoundingBox;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.Point;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Gebruiker on 2/5/2017.
  */
-public class MapView extends JPanel {
-    private Coordinate mapCenter;
-    private float zoomLevel;
-    public float minZoomlevel=0.0f;
-    public float maxZoomlevel=24.0f;
-    public float zoomSpeed=0.1f;
-    private double scale = 100000;
-    private double unitSize;
-    private int srid;
-    private List<RenderRule> renderRules=new ArrayList<>();
-    private Point centerPoint;
-
-    public int getSrid() {
-        return srid;
-    }
-
-    public MapView() { mapCenter=new Coordinate(0,0); }
+public class MapView extends JPanel implements ComponentListener {
+    private ViewModel viewModel;
+    private List<RenderRule> renderRules;
 
     public MapView(Coordinate coordinate, float zoomLevel, int srid) {
-        mapCenter=coordinate;
-        setZoomLevel(zoomLevel);
-        this.srid=srid;
+        addComponentListener(this);
+        viewModel = new ViewModel();
+        renderRules = new ArrayList<>();
+        viewModel.setMapCenter(coordinate);
+        viewModel.setZoomLevel(zoomLevel);
+        viewModel.setSrid(srid);
+        //Point p = new Point();
+        //p.setLocation(getWidth() / 2, getHeight() / 2);
     }
 
-    public Coordinate getMapCenter() {
-        return mapCenter;
-    }
-
-    public void setMapCenter(Coordinate mapCenter) {
-        this.mapCenter = mapCenter;
+    public void changeMapCenter(Coordinate mapCenter) {
+        viewModel.setMapCenter(mapCenter);
         repaint();
-    }
-
-    public float getZoomLevel() {
-        return zoomLevel;
-    }
-
-    public void setZoomLevel(float zoomLevel) {
-        this.zoomLevel = zoomLevel;
-        unitSize=Math.pow(2,zoomLevel)/scale;
     }
 
     public void changeZoomLevel(float zoomLevel) {
-        setZoomLevel(zoomLevel);
+        viewModel.setZoomLevel(zoomLevel);
         repaint();
     }
 
-    public double unitToPixel(double c) {
-        return c * unitSize;
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        for (RenderRule renderRule : renderRules) {
+            drawAllRules(renderRule,(Graphics2D)g);
+        }
     }
 
-    public double pixelToUnit(double p) {
-        return p/unitSize;
+    private void drawAllRules(RenderRule renderRule, Graphics2D g2d) {
+        if ((renderRule.getZoommin() == 0 && renderRule.getZoommax() == 0) || (viewModel.getZoomLevel() >= renderRule.getZoommin() && viewModel.getZoomLevel() <= renderRule.getZoommax())) {
+            renderRule.draw(renderRule, g2d, viewModel);
+            if (renderRule.getRules() != null) {
+                for (RenderRule r : renderRule.getRules()) {
+                    drawAllRules(r, g2d);
+                }
+            }
+        }
     }
 
-
-    public Coordinate pixelsToCoordinate(Point p) {
-        return new Coordinate(mapCenter.x+pixelToUnit(p.x-centerPoint.x),mapCenter.y-pixelToUnit(p.y-centerPoint.y));
-    }
-
-    public Point coordinateToScreen(Coordinate c) {
-        Point point = new Point();
-        point.setLocation(centerPoint.x + unitToPixel(c.x - mapCenter.x),centerPoint.y - unitToPixel(c.y - mapCenter.y));
-        return point;
-    }
-
-    public BoundingBox getBoundingBox() {
-        return new BoundingBox(mapCenter.x-pixelToUnit(centerPoint.x),mapCenter.y-pixelToUnit(centerPoint.y),pixelToUnit(getWidth()),pixelToUnit(getHeight()));
+    @Override
+    public void componentResized(ComponentEvent e) {
+        viewModel.setScreenSize(getSize());
     }
 
     public List<RenderRule> getRenderRules() {
@@ -90,24 +71,22 @@ public class MapView extends JPanel {
         this.renderRules = renderRules;
     }
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        centerPoint=new Point();
-        centerPoint.setLocation(getWidth() / 2, getHeight() / 2);
-        for (RenderRule renderRule : renderRules) {
-            drawAllRules(renderRule,(Graphics2D)g);
-        }
-        TileData osmt = new TileData("Openstreetmap Transport","http://[a-c].tile.thunderforest.com/transport/{z}/{x}/{y}.png");
-        g.drawImage(osmt.getTile(0,0,0),0,0,null);
+    public ViewModel getViewModel() {
+        return viewModel;
     }
 
-    private void drawAllRules(RenderRule renderRule, Graphics2D g2d) {
-        renderRule.draw(renderRule,g2d,this);
-        if (renderRule.getRules()!=null) {
-            for (RenderRule r : renderRule.getRules()) {
-                drawAllRules(r,g2d);
-            }
-        }
+    @Override
+    public void componentMoved(ComponentEvent e) {
+
+    }
+
+    @Override
+    public void componentShown(ComponentEvent e) {
+
+    }
+
+    @Override
+    public void componentHidden(ComponentEvent e) {
+
     }
 }

@@ -5,8 +5,18 @@ package ffk27.mapviewer2;
  */
 public abstract class GeoDataSource {
     protected String name;
+    protected int srid;
+
+    public GeoDataSource(String name, int srid) {
+        this.name = name;
+        this.srid = srid;
+    }
 
     public String getName() {
         return name;
+    }
+
+    public int getSrid() {
+        return srid;
     }
 }

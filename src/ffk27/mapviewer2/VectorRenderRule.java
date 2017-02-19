@@ -19,136 +19,55 @@ import java.util.Random;
 /**
  * Created by Gebruiker on 2/5/2017.
  */
-public class VectorRenderRule extends RenderRule {
-    private String[] attributes;
-    private String[] statement;
-    private List<Style> styles;
-    private int geomType;
+public abstract class VectorRenderRule extends RenderRule {
+    protected String[] attributes;
+    protected String[] statement;
+    protected List<Style> styles;
+    protected int geomType;
 
-    @Override
-    public void draw(RenderRule renderRule, Graphics2D g2d, MapView mapView) {
-        if (zoommin > zoommax) {
-            zoommax=mapView.maxZoomlevel;
-        }
-        if ((zoommin == 0 && zoommax == 0) || (mapView.getZoomLevel() >= zoommin && mapView.getZoomLevel() <= zoommax)) {
-            if (((VectorRenderRule)renderRule).getStyles().size()>0) {
-                JDBCVectorData jdbcVectorData = (JDBCVectorData) renderRule.getDataSource();
-                if (jdbcVectorData != null) {
-                    try {
-                        JDBCConnection.DBType dbType = jdbcVectorData.getJdbcDataTable().getJdbcConnection().getDbType();
-                        String geometry_column = jdbcVectorData.getGeometryColumn();
-                        BoundingBox boundingb = mapView.getBoundingBox();
-                        double minX = boundingb.getMinX();
-                        double minY = boundingb.getMinY();
-                        double maxX = boundingb.getMaxX();
-                        double maxY = boundingb.getMaxY();
-                        com.vividsolutions.jts.geom.Polygon bboxG = new GeometryFactory().createPolygon(new Coordinate[]{new Coordinate(minX, maxY), new Coordinate(maxX, maxY), new Coordinate(maxX, minY), new Coordinate(minX, minY), new Coordinate(minX, maxY)});
-                        String attributes = "";
-                        String[] attrarray = ((VectorRenderRule) renderRule).getAttributes();
-                        if (attrarray != null && attrarray.length > 0) {
-                            for (String attribute : attrarray) {
-                                attributes += "," + attribute;
-                            }
-                        }
-                        String bbox = "ST_Transform(ST_GeomFromText('" + bboxG.toText() + "'," + mapView.getSrid() + ")," + mapView.getSrid() + ")";
-                        String query = "SELECT ST_AsBinary(ST_Transform(" + geometry_column + "," + mapView.getSrid() + ")) " + attributes + " FROM " + jdbcVectorData.getJdbcDataTable().getTableName() + " WHERE ";
-                        if (dbType == JDBCConnection.DBType.H2 || dbType == JDBCConnection.DBType.PostgreSQL) {
-                            query += geometry_column + " && " + bbox;
-                        } else if (dbType == JDBCConnection.DBType.SQLite) {
-                            query += "ROWID IN (SELECT ROWID FROM SpatialIndex WHERE f_table_name='" + jdbcVectorData.getJdbcDataTable().getTableName() + "' AND f_geometry_column='" + geometry_column + "' AND search_frame=" + bbox + ")";
-                        }
-                        if (dbType == JDBCConnection.DBType.H2 || dbType == JDBCConnection.DBType.SQLite) {
-                            query += " AND (ST_Intersects(" + geometry_column + "," + bbox + "))";
-                        }
-                        if (((VectorRenderRule) renderRule).getGeomType() != 0) {
-                            query += " AND ST_GeometryType(" + geometry_column + ")='";
-                            String gtype = Utils.geomTypeCode2Name(((VectorRenderRule) renderRule).getGeomType());
-                            if (dbType == JDBCConnection.DBType.PostgreSQL) {
-                                query += "ST_";
-                            } else if (dbType == JDBCConnection.DBType.SQLite) {
-                                gtype = gtype.toUpperCase();
-                            }
-                            query += gtype + "'";
-                        }
-                        if (((VectorRenderRule) renderRule).getStatement()!=null) {
-                            for (String stmt : ((VectorRenderRule) renderRule).getStatement()) {
-                                query += " AND (" + stmt + ")";
-                            }
-                        }
-                        query += ";";
-                        System.out.println(query);
-
-                        Statement stmt = jdbcVectorData.getJdbcDataTable().getJdbcConnection().getConnection().createStatement();
-                        ResultSet rs = stmt.executeQuery(query);
-                        while (rs.next()) {
-                            String[] labels = null;
-                            if (attrarray != null && attrarray.length > 0) {
-                                labels = new String[attrarray.length];
-                                for (int i = 0; i < attrarray.length; i++) {
-                                    labels[i] = rs.getString(i + 2);
-                                }
-                            }
-                            drawGeom(new WKBReader().read(rs.getBytes(1)), (VectorRenderRule) renderRule, labels, g2d, mapView);
-                        }
-                        rs.close();
-                        stmt.close();
-                    }
-                    catch (SQLException se) {
-                        se.printStackTrace();
-                    } catch (ParseException pe) {
-                        pe.printStackTrace();
-                    }
-                }
-                else {
-                    System.out.println("Error: No or invalid data source");
-                }
-            }
-        }
-    }
-
-    private void drawGeom(Geometry g, VectorRenderRule renderRule, String[] labels, Graphics2D g2d, MapView mapView) {
+    protected void drawGeom(Geometry g, String[] labels, Graphics2D g2d, ViewModel viewModel) {
         Path2D path = new Path2D.Double(Path2D.WIND_EVEN_ODD);
         for (int i = 0; i < g.getNumGeometries(); i++) {
             if (g.getNumPoints() > 0) {
                 String geometryType = g.getGeometryN(i).getGeometryType();
                 Point screenpos;
                 if (geometryType == "Point") {
-                    screenpos = mapView.coordinateToScreen(g.getGeometryN(i).getCoordinate());
+                    screenpos = viewModel.coordinateToPixels(g.getGeometryN(i).getCoordinate());
                     path.moveTo(screenpos.x,screenpos.y);
                 } else {
                     if (geometryType == "Polygon") {
                         com.vividsolutions.jts.geom.Polygon p = (com.vividsolutions.jts.geom.Polygon) g.getGeometryN(i);
-                        screenpos = mapView.coordinateToScreen(p.getExteriorRing().getCoordinates()[0]);
+                        screenpos = viewModel.coordinateToPixels(p.getExteriorRing().getCoordinates()[0]);
                         path.moveTo(screenpos.x, screenpos.y);
                         for (int i2 = 1; i2 < p.getExteriorRing().getCoordinates().length; i2++) {
-                            screenpos = mapView.coordinateToScreen(p.getExteriorRing().getCoordinates()[i2]);
+                            screenpos = viewModel.coordinateToPixels(p.getExteriorRing().getCoordinates()[i2]);
                             path.lineTo(screenpos.x, screenpos.y);
                         }
                         for (int i2 = 0; i2 < p.getNumInteriorRing(); i2++) {
-                            screenpos = mapView.coordinateToScreen(p.getInteriorRingN(i2).getCoordinates()[0]);
+                            screenpos = viewModel.coordinateToPixels(p.getInteriorRingN(i2).getCoordinates()[0]);
                             path.moveTo(screenpos.x, screenpos.y);
                             for (int i3 = 1; i3 < p.getInteriorRingN(i2).getCoordinates().length; i3++) {
-                                screenpos = mapView.coordinateToScreen(p.getInteriorRingN(i2).getCoordinates()[i3]);
+                                screenpos = viewModel.coordinateToPixels(p.getInteriorRingN(i2).getCoordinates()[i3]);
                                 path.lineTo(screenpos.x, screenpos.y);
                             }
                         }
                     } else if (geometryType == "LineString") {
-                        screenpos = mapView.coordinateToScreen(g.getGeometryN(i).getCoordinates()[0]);
+                        screenpos = viewModel.coordinateToPixels(g.getGeometryN(i).getCoordinates()[0]);
                         path.moveTo(screenpos.x, screenpos.y);
                         for (int i2 = 1; i2 < g.getGeometryN(i).getCoordinates().length; i2++) {
-                            screenpos = mapView.coordinateToScreen(g.getGeometryN(i).getCoordinates()[i2]);
+                            screenpos = viewModel.coordinateToPixels(g.getGeometryN(i).getCoordinates()[i2]);
                             path.lineTo(screenpos.x, screenpos.y);
                         }
                     }
                 }
             }
         }
-        for (Style style : renderRule.getStyles()) {
+        for (Style style : styles) {
             drawGraphic(path, style,labels,g2d);
         }
     }
 
-    private void drawGraphic(Path2D path, Style style, String[] labels, Graphics2D g2d) {
+    protected void drawGraphic(Path2D path, Style style, String[] labels, Graphics2D g2d) {
         Point centroid = new Point((int)path.getBounds().getCenterX(),(int)path.getBounds().getCenterY());
         if (style instanceof CircleStyle) {
             CircleStyle cstyle = (CircleStyle) style;
@@ -170,7 +89,7 @@ public class VectorRenderRule extends RenderRule {
             if (((TextStyle)style).getFormat()!=null && !((TextStyle)style).getFormat().isEmpty()) {
                 String[] texts = ((TextStyle) style).getFormat().split("\\\\n");
                 for (int i=0; i<texts.length; i++) {
-                    String[] attrs = style.getStyleRule().getAttributes();
+                    String[] attrs = ((JDBCRenderRule)style.getStyleRule()).getAttributes();
                     for (int i2 = 0; i2 < attrs.length; i2++) {
                         String attrname = attrs[i2];
                         if (texts[i].contains("{" + attrname + "}")) {
@@ -212,22 +131,6 @@ public class VectorRenderRule extends RenderRule {
         }
     }
 
-    public String[] getAttributes() {
-        return attributes;
-    }
-
-    public void setAttributes(String[] attributes) {
-        this.attributes = attributes;
-    }
-
-    public String[] getStatement() {
-        return statement;
-    }
-
-    public void setStatement(String[] statement) {
-        this.statement = statement;
-    }
-
     public List<Style> getStyles() {
         return styles;
     }
@@ -244,13 +147,35 @@ public class VectorRenderRule extends RenderRule {
         this.geomType = geomType;
     }
 
-    public static VectorRenderRule createRandom(JDBCVectorData vectorData) {
-        VectorRenderRule vectorRenderRule = new VectorRenderRule();
-        vectorRenderRule.setDataSource(vectorData);
+    public static VectorRenderRule createRandom(GeoDataSource geoDataSource) {
+        VectorRenderRule vectorRenderRule=null;
+        if (geoDataSource instanceof JDBCVectorData) {
+            vectorRenderRule=new JDBCRenderRule();
+        }
+        else {
+            vectorRenderRule = new GeomsRenderRule();
+        }
+        vectorRenderRule.setDataSource(geoDataSource);
         Style s = new Style(vectorRenderRule,new Color(new Random().nextFloat(),new Random().nextFloat(),new Random().nextFloat(),1f),Color.BLACK,new BasicStroke(1f));
         List<Style> styles = new ArrayList<>();
         styles.add(s);
         vectorRenderRule.setStyles(styles);
         return vectorRenderRule;
+    }
+
+    public String[] getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(String[] attributes) {
+        this.attributes = attributes;
+    }
+
+    public String[] getStatement() {
+        return statement;
+    }
+
+    public void setStatement(String[] statement) {
+        this.statement = statement;
     }
 }

@@ -7,8 +7,8 @@ public class JDBCVectorData extends GeoDataSource {
     private JDBCDataTable jdbcDataTable;
     private String geometryColumn;
 
-    public JDBCVectorData(String name, JDBCDataTable jdbcDataTable, String geometryColumn) throws Exception {
-        this.name=name;
+    public JDBCVectorData(String name, int srid, JDBCDataTable jdbcDataTable, String geometryColumn) throws Exception {
+        super(name,srid);
         this.jdbcDataTable = jdbcDataTable;
         if (jdbcDataTable.columnNameExist(geometryColumn)) {
             this.geometryColumn = geometryColumn;

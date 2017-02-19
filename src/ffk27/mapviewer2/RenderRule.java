@@ -21,7 +21,7 @@ public abstract class RenderRule {
     protected float zoommin;
     protected float zoommax;
 
-    public abstract void draw(RenderRule renderRule, Graphics2D g2d, MapView mapView);
+    public abstract void draw(RenderRule renderRule, Graphics2D g2d, ViewModel viewModel);
 
     public RenderRule getParent() {
         return parent;
@@ -64,11 +64,12 @@ public abstract class RenderRule {
     }
 
     private static GeoDataSource parentDataSource(RenderRule renderRule) {
-        if (renderRule.dataSource!=null) {
-            return renderRule.dataSource;
-        }
-        else if (renderRule.getParent()!=null) {
-            return parentDataSource(renderRule.getParent());
+        if (renderRule!=null) {
+            if (renderRule.dataSource != null) {
+                return renderRule.dataSource;
+            } else if (renderRule.getParent() != null) {
+                return parentDataSource(renderRule.getParent());
+            }
         }
         return null;
     }
@@ -97,119 +98,130 @@ public abstract class RenderRule {
     }
 
     private static RenderRule getStyleRule(Node nRule, RenderRule parent, List<GeoDataSource> dataSources) {
-        RenderRule renderRule=null;
         NamedNodeMap namedNodeMap = nRule.getAttributes();
-
-        String sourceType = Utils.getAttributeStringValue("sourcetype",namedNodeMap);
-        //currently only jdbcvectorsource supported.
-        if (sourceType==null || sourceType.equals("jdbcvector")) {
-            renderRule = new VectorRenderRule();
-        }
-
-        if (parent!=null) {
-            renderRule.setParent(parent);
-        }
-
-        renderRule.setZoommin(Utils.getAttributeFloatValue("zoom-min",namedNodeMap));
-        renderRule.setZoommax(Utils.getAttributeFloatValue("zoom-max",namedNodeMap));
-
+        GeoDataSource geoDataSource=null;
         String sourceName = Utils.getAttributeStringValue("sourcename",namedNodeMap);
         if (sourceName!=null) {
             // if sourcename isset, find the matching geodatasource object.
             for (GeoDataSource dataSource : dataSources) {
                 if (dataSource.getName().equals(sourceName)) {
-                    renderRule.setDataSource(dataSource);
+                    geoDataSource=dataSource;
                     break;
                 }
             }
-            if (renderRule.getDataSource()==null) {
+            if (geoDataSource==null) {
                 System.out.println("Error: source "+sourceName+" unknown!");
             }
         } else {
-            renderRule.setDataSource(parentDataSource(renderRule));
+            geoDataSource = parentDataSource(parent);
         }
 
-        if (renderRule instanceof VectorRenderRule) {
-            VectorRenderRule vectorRenderRule = (VectorRenderRule)renderRule;
-            String attrstring = Utils.getAttributeStringValue("attributes",namedNodeMap);
-            String[] attrs = null;
-            if (attrstring!=null) {
-                attrs=attrstring.split(",");
+        if (geoDataSource!=null) {
+            RenderRule renderRule=null;
+            if (geoDataSource instanceof JDBCVectorData) {
+                renderRule = new JDBCRenderRule();
             }
-            vectorRenderRule.setAttributes(getAllAttributes((VectorRenderRule)vectorRenderRule.getParent(),attrs));
-            String stmt = Utils.getAttributeStringValue("stmt",namedNodeMap);
-            String[] stmts = null;
-            if (stmt!=null) {
-                stmts=new String[]{stmt};
+            else if (geoDataSource instanceof Geoms) {
+                renderRule = new GeomsRenderRule();
             }
-            vectorRenderRule.setStatement(getAllStatements((VectorRenderRule)vectorRenderRule.getParent(),stmts));
+            else if (geoDataSource instanceof TileData) {
+                renderRule = new TileRule();
+            }
 
-            for (int i=0; i<nRule.getChildNodes().getLength(); i++) {
-                if (vectorRenderRule.getStyles()==null) {
-                    vectorRenderRule.setStyles(new ArrayList<>());
+            renderRule.setDataSource(geoDataSource);
+
+            if (parent != null) {
+                renderRule.setParent(parent);
+            }
+
+            renderRule.setZoommin(Utils.getAttributeFloatValue("zoom-min", namedNodeMap));
+            renderRule.setZoommax(Utils.getAttributeFloatValue("zoom-max", namedNodeMap));
+
+            if (renderRule.getZoommin() > renderRule.getZoommax()) {
+                renderRule.setZoommax(24);
+            }
+
+            if (renderRule instanceof VectorRenderRule) {
+                VectorRenderRule vectorRenderRule = (VectorRenderRule) renderRule;
+                String attrstring = Utils.getAttributeStringValue("attributes", namedNodeMap);
+                String[] attrs = null;
+                if (attrstring != null) {
+                    attrs = attrstring.split(",");
                 }
-                Node node = nRule.getChildNodes().item(i);
-                String nodename = node.getNodeName();
-                if (nodename.equals("path") || nodename.equals("circle") || nodename.equals("text")) { //current supported styletags
-                    NamedNodeMap attributes = node.getAttributes();
-                    Color fill = Utils.getAttributeColor("fill", attributes);
-                    Color line = Utils.getAttributeColor("stroke", attributes);
-                    String strokewidth = Utils.getAttributeStringValue("stroke-width", attributes);
-                    Stroke stroke = null;
-                    if (strokewidth != null) {
-                        strokewidth=strokewidth.trim();
-                        if (strokewidth.endsWith("px")) {
+                vectorRenderRule.setAttributes(getAllAttributes((VectorRenderRule) vectorRenderRule.getParent(), attrs));
+                String stmt = Utils.getAttributeStringValue("stmt", namedNodeMap);
+                String[] stmts = null;
+                if (stmt != null) {
+                    stmts = new String[]{stmt};
+                }
+                vectorRenderRule.setStatement(getAllStatements((VectorRenderRule) vectorRenderRule.getParent(), stmts));
 
-                        } else if (strokewidth.endsWith("em")) {
+                for (int i = 0; i < nRule.getChildNodes().getLength(); i++) {
+                    if (vectorRenderRule.getStyles() == null) {
+                        vectorRenderRule.setStyles(new ArrayList<>());
+                    }
+                    Node node = nRule.getChildNodes().item(i);
+                    String nodename = node.getNodeName();
+                    if (nodename.equals("path") || nodename.equals("circle") || nodename.equals("text")) { //current supported styletags
+                        NamedNodeMap attributes = node.getAttributes();
+                        Color fill = Utils.getAttributeColor("fill", attributes);
+                        Color line = Utils.getAttributeColor("stroke", attributes);
+                        String strokewidth = Utils.getAttributeStringValue("stroke-width", attributes);
+                        Stroke stroke = null;
+                        if (strokewidth != null) {
+                            strokewidth = strokewidth.trim();
+                            if (strokewidth.endsWith("px")) {
 
-                        } else if (strokewidth.endsWith("%")) {
+                            } else if (strokewidth.endsWith("em")) {
 
-                        } else {
-                            stroke = new BasicStroke(Float.parseFloat(strokewidth), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                            } else if (strokewidth.endsWith("%")) {
+
+                            } else {
+                                stroke = new BasicStroke(Float.parseFloat(strokewidth), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                            }
                         }
-                    }
-                    if (nodename.equals("path")) {
-                        vectorRenderRule.getStyles().add(new Style(vectorRenderRule,fill, line, stroke));
-                    }
-                    else if (nodename.equals("circle")) {
-                        float radius = Utils.getAttributeFloatValue("radius",attributes);
-                        vectorRenderRule.getStyles().add(new CircleStyle(vectorRenderRule,fill,line,stroke,radius));
-                    }
-                    else if (nodename.equals("text")) {
-                        String format = Utils.getAttributeStringValue("format",attributes);
-                        String fontfamily = Utils.getAttributeStringValue("font-family",attributes);
-                        String fontstyle = Utils.getAttributeStringValue("font-style",attributes);
-                        int fstyle=0;
-                        if (fontstyle.contains("bold")) {
-                            fstyle=fstyle|Font.BOLD;
+                        if (nodename.equals("path")) {
+                            vectorRenderRule.getStyles().add(new Style(vectorRenderRule, fill, line, stroke));
+                        } else if (nodename.equals("circle")) {
+                            float radius = Utils.getAttributeFloatValue("radius", attributes);
+                            vectorRenderRule.getStyles().add(new CircleStyle(vectorRenderRule, fill, line, stroke, radius));
+                        } else if (nodename.equals("text")) {
+                            String format = Utils.getAttributeStringValue("format", attributes);
+                            String fontfamily = Utils.getAttributeStringValue("font-family", attributes);
+                            String fontstyle = Utils.getAttributeStringValue("font-style", attributes);
+                            int fstyle = 0;
+                            if (fontstyle.contains("bold")) {
+                                fstyle = fstyle | Font.BOLD;
+                            }
+                            if (fontstyle.contains("italic")) {
+                                fstyle = fstyle | Font.ITALIC;
+                            }
+                            int fontsize = Utils.getAttributeIntValue("font-size", attributes);
+                            Font font = new Font(fontfamily, fstyle, fontsize);
+                            vectorRenderRule.getStyles().add(new TextStyle(vectorRenderRule, fill, line, stroke, format, font));
                         }
-                        if (fontstyle.contains("italic")) {
-                            fstyle=fstyle|Font.ITALIC;
-                        }
-                        int fontsize = Utils.getAttributeIntValue("font-size",attributes);
-                        Font font = new Font(fontfamily,fstyle,fontsize);
-                        vectorRenderRule.getStyles().add(new TextStyle(vectorRenderRule,fill,line,stroke,format,font));
                     }
                 }
             }
+            boolean hasChilds = false;
+            List<RenderRule> styleRules = null;
+            for (int i = 0; i < nRule.getChildNodes().getLength(); i++) {
+                if (nRule.getChildNodes().item(i).getNodeName() == "rule") {
+                    hasChilds = true;
+                    if (styleRules == null) {
+                        styleRules = new ArrayList<>();
+                    }
+                    RenderRule sc = getStyleRule(nRule.getChildNodes().item(i), renderRule, dataSources);
+                    if (sc != null) {
+                        styleRules.add(sc);
+                    }
+                }
+            }
+            renderRule.setRules(styleRules);
+            return renderRule;
         }
-        boolean hasChilds=false;
-        List<RenderRule> styleRules = null;
-        for (int i=0; i<nRule.getChildNodes().getLength(); i++) {
-            if (nRule.getChildNodes().item(i).getNodeName()=="rule") {
-                hasChilds=true;
-                if (styleRules==null) {
-                    styleRules = new ArrayList<>();
-                }
-                RenderRule sc = getStyleRule(nRule.getChildNodes().item(i),renderRule,dataSources);
-                if (sc!=null) {
-                    styleRules.add(sc);
-                }
-            }
-        }
-        renderRule.setRules(styleRules);
-
-        return renderRule;
+        System.out.println("Error: no datasource found");
+        return null;
     }
 
     private static String[] getAllStatements(VectorRenderRule vectorRenderRule, String statements[]) {

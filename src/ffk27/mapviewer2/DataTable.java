@@ -9,7 +9,7 @@ public abstract class DataTable {
 
     public boolean columnNameExist(String columnName) {
         for (int i=0; i<columnNames.length; i++) {
-            if (columnNames[i].equals(columnName)) {
+            if (columnNames[i].toLowerCase().equals(columnName.toLowerCase())) {
                 return true;
             }
         }
