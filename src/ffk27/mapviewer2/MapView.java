@@ -14,19 +14,16 @@ import java.util.List;
 /**
  * Created by Gebruiker on 2/5/2017.
  */
-public class MapView extends JPanel implements ComponentListener {
+public class MapView extends Canvas {
     private ViewModel viewModel;
     private List<RenderRule> renderRules;
 
     public MapView(Coordinate coordinate, float zoomLevel, int srid) {
-        addComponentListener(this);
         viewModel = new ViewModel();
         renderRules = new ArrayList<>();
         viewModel.setMapCenter(coordinate);
         viewModel.setZoomLevel(zoomLevel);
         viewModel.setSrid(srid);
-        //Point p = new Point();
-        //p.setLocation(getWidth() / 2, getHeight() / 2);
     }
 
     public void changeMapCenter(Coordinate mapCenter) {
@@ -40,10 +37,14 @@ public class MapView extends JPanel implements ComponentListener {
     }
 
     @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
+    public void paint(Graphics g) {
+        super.paint(g);
+        draw((Graphics2D)g);
+    }
+
+    private void draw(Graphics2D g2d) {
         for (RenderRule renderRule : renderRules) {
-            drawAllRules(renderRule,(Graphics2D)g);
+            drawAllRules(renderRule,g2d);
         }
     }
 
@@ -58,11 +59,6 @@ public class MapView extends JPanel implements ComponentListener {
         }
     }
 
-    @Override
-    public void componentResized(ComponentEvent e) {
-        viewModel.setScreenSize(getSize());
-    }
-
     public List<RenderRule> getRenderRules() {
         return renderRules;
     }
@@ -73,20 +69,5 @@ public class MapView extends JPanel implements ComponentListener {
 
     public ViewModel getViewModel() {
         return viewModel;
-    }
-
-    @Override
-    public void componentMoved(ComponentEvent e) {
-
-    }
-
-    @Override
-    public void componentShown(ComponentEvent e) {
-
-    }
-
-    @Override
-    public void componentHidden(ComponentEvent e) {
-
     }
 }

@@ -8,7 +8,7 @@ import java.awt.event.*;
 /**
  * Created by Gebruiker on 2/6/2017.
  */
-public class Controller implements MouseListener, MouseMotionListener, MouseWheelListener {
+public class Controller implements MouseListener, MouseMotionListener, MouseWheelListener,ComponentListener {
     private MapView mapView;
     private Point tempP;
 
@@ -17,6 +17,7 @@ public class Controller implements MouseListener, MouseMotionListener, MouseWhee
         mapView.addMouseListener(this);
         mapView.addMouseMotionListener(this);
         mapView.addMouseWheelListener(this);
+        mapView.addComponentListener(this);
     }
 
     @Override
@@ -70,7 +71,7 @@ public class Controller implements MouseListener, MouseMotionListener, MouseWhee
         }
     }
 
-    public void zoomIn(Point p) {
+    private void zoomIn(Point p) {
         if (mapView.getViewModel().getZoomLevel()<mapView.getViewModel().maxZoomlevel) {
             Coordinate c = mapView.getViewModel().pixelsToCoordinate(p);
             mapView.getViewModel().setZoomLevel(mapView.getViewModel().getZoomLevel()+mapView.getViewModel().zoomSpeed);
@@ -79,12 +80,32 @@ public class Controller implements MouseListener, MouseMotionListener, MouseWhee
         }
     }
 
-    public void zoomOut(Point p) {
+    private void zoomOut(Point p) {
         if (mapView.getViewModel().getZoomLevel()>mapView.getViewModel().minZoomlevel) {
             Coordinate c = mapView.getViewModel().pixelsToCoordinate(p);
             mapView.getViewModel().setZoomLevel(mapView.getViewModel().getZoomLevel()-mapView.getViewModel().zoomSpeed);
             Coordinate c2 = mapView.getViewModel().pixelsToCoordinate(p);
             mapView.changeMapCenter(new Coordinate(mapView.getViewModel().getMapCenter().x-(c2.x-c.x),mapView.getViewModel().getMapCenter().y-(c2.y-c.y)));
         }
+    }
+
+    @Override
+    public void componentResized(ComponentEvent e) {
+        mapView.getViewModel().setScreenSize(e.getComponent().getSize());
+    }
+
+    @Override
+    public void componentMoved(ComponentEvent e) {
+
+    }
+
+    @Override
+    public void componentShown(ComponentEvent e) {
+
+    }
+
+    @Override
+    public void componentHidden(ComponentEvent e) {
+
     }
 }

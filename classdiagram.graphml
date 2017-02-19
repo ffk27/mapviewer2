@@ -286,10 +286,10 @@ dataSources : List&lt;GeoDataSource&gt;) : RenderRule</y:MethodLabel>
       <data key="d4"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="222.74933333333342" width="232.11400000000003" x="184.26944714804358" y="-1378.0323640094193"/>
+          <y:Geometry height="132.85346686656192" width="228.36140571428575" x="172.16430429090076" y="-1227.7268401998956"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="59.62451171875" x="86.24474414062502" y="3.0">MapView<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="59.62451171875" x="84.36844699776788" y="3.0">MapView<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -297,17 +297,12 @@ dataSources : List&lt;GeoDataSource&gt;) : RenderRule</y:MethodLabel>
             </y:ModelParameter>
           </y:NodeLabel>
           <y:UML clipContent="true" constraint="" omitDetails="false" stereotype="" use3DEffect="true">
-            <y:AttributeLabel>- mapCenter : Coordinate 
-- zoomLevel : float 
-+ minZoomlevel : float
-+ maxZoomlevel : float
-+ zoomSpeed : float
-- scale : double
-- unitSize : double
-- srid : int
+            <y:AttributeLabel>- viewModel : ViewModel
 - renderRules : list&lt;RenderRule&gt;
-- centerPoint : Point</y:AttributeLabel>
-            <y:MethodLabel>- drawAllRules(renderRule : RenderRule,
+</y:AttributeLabel>
+            <y:MethodLabel>+ changeMapCenter() : void
++ changeZoomLevel() : void
+- drawAllRules(renderRule : RenderRule,
 g2d : Graphics2D) : void</y:MethodLabel>
           </y:UML>
         </y:UMLClassNode>
@@ -336,7 +331,6 @@ g2d : Graphics2D) : void</y:MethodLabel>
     </node>
     <node id="n13">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
           <y:Geometry height="107.0" width="114.0" x="-277.47966335416663" y="-359.5624999999999"/>
@@ -360,7 +354,6 @@ g2d : Graphics2D) : void</y:MethodLabel>
     </node>
     <node id="n14">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
           <y:Geometry height="76.75" width="169.0" x="-277.47966335416663" y="-189.8910280188387"/>
@@ -383,7 +376,6 @@ g2d : Graphics2D) : void</y:MethodLabel>
     </node>
     <node id="n15">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
           <y:Geometry height="28.0" width="100.0" x="250.3264471480436" y="-785.723387"/>
@@ -405,13 +397,12 @@ g2d : Graphics2D) : void</y:MethodLabel>
     </node>
     <node id="n16">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="28.0" width="100.0" x="-66.57006415624949" y="-1450.5323640094193"/>
+          <y:Geometry height="176.1873070664567" width="137.82857142857142" x="46.600412034226906" y="-1497.2506497237055"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="66.11181640625" x="16.944091796875" y="3.0">Controller<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="66.11181640625" x="35.85837751116071" y="3.0">Controller<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -419,15 +410,21 @@ g2d : Graphics2D) : void</y:MethodLabel>
             </y:ModelParameter>
           </y:NodeLabel>
           <y:UML clipContent="true" constraint="" omitDetails="false" stereotype="" use3DEffect="true">
-            <y:AttributeLabel/>
-            <y:MethodLabel/>
+            <y:AttributeLabel>- mapView : MapView
+- tempPoint : Point</y:AttributeLabel>
+            <y:MethodLabel>+ mouseClicked()
++ mouseReleased()
++ mouseDragged()
++ mouseWheelMoved()
+- zoomIn()
+- zoomOut()
++ componentResized ()</y:MethodLabel>
           </y:UML>
         </y:UMLClassNode>
       </data>
     </node>
     <node id="n17">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
           <y:Geometry height="28.0" width="123.7980609458346" x="107.67812500000048" y="-415.85897198116106"/>
@@ -442,6 +439,36 @@ g2d : Graphics2D) : void</y:MethodLabel>
           </y:NodeLabel>
           <y:UML clipContent="true" constraint="" omitDetails="false" stereotype="" use3DEffect="true">
             <y:AttributeLabel/>
+            <y:MethodLabel/>
+          </y:UML>
+        </y:UMLClassNode>
+      </data>
+    </node>
+    <node id="n18">
+      <data key="d4"/>
+      <data key="d5"/>
+      <data key="d6">
+        <y:UMLClassNode>
+          <y:Geometry height="176.1873070664568" width="151.33858995833282" x="-156.99506415624947" y="-1258.057108971219"/>
+          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.92626953125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="71.17724609375" x="40.08067193229141" y="3.0">ViewModel<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="-0.03703090122767855" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:UML clipContent="true" constraint="" omitDetails="false" stereotype="" use3DEffect="true">
+            <y:AttributeLabel>- mapCenter : Coordinate 
+- zoomLevel : float 
++ minZoomlevel : float
++ maxZoomlevel : float
++ zoomSpeed : float
+- scale : double
+- unitSize : double
+- srid : int
+- centerPoint : Point</y:AttributeLabel>
             <y:MethodLabel/>
           </y:UML>
         </y:UMLClassNode>
@@ -577,7 +604,6 @@ g2d : Graphics2D) : void</y:MethodLabel>
       </data>
     </edge>
     <edge id="e12" source="n13" target="n14">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -588,7 +614,6 @@ g2d : Graphics2D) : void</y:MethodLabel>
       </data>
     </edge>
     <edge id="e13" source="n12" target="n13">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -599,7 +624,6 @@ g2d : Graphics2D) : void</y:MethodLabel>
       </data>
     </edge>
     <edge id="e14" source="n15" target="n10">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -610,7 +634,6 @@ g2d : Graphics2D) : void</y:MethodLabel>
       </data>
     </edge>
     <edge id="e15" source="n16" target="n11">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -621,7 +644,6 @@ g2d : Graphics2D) : void</y:MethodLabel>
       </data>
     </edge>
     <edge id="e16" source="n10" target="n10">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="-140.463608768751" sy="-51.60390632391227" tx="-140.416733768751" ty="42.39609367608773">
@@ -635,12 +657,22 @@ g2d : Graphics2D) : void</y:MethodLabel>
       </data>
     </edge>
     <edge id="e17" source="n17" target="n5">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="white_delta"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e18" source="n11" target="n18">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="plain"/>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
       </data>
