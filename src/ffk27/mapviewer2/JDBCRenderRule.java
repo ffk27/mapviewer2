@@ -16,18 +16,17 @@ import java.sql.Statement;
  */
 public class JDBCRenderRule extends VectorRenderRule {
     @Override
-    public void draw(RenderRule renderRule, Graphics2D g2d, ViewModel viewModel) {
+    public void draw(RenderRule renderRule, Graphics2D g2d, Drawer drawer) {
         if (((VectorRenderRule)renderRule).getStyles().size()>0) {
             JDBCVectorData jdbcVectorData = (JDBCVectorData) renderRule.getDataSource();
             if (jdbcVectorData != null) {
                 try {
                     JDBCConnection.DBType dbType = jdbcVectorData.getJdbcDataTable().getJdbcConnection().getDbType();
                     String geometry_column = jdbcVectorData.getGeometryColumn();
-                    BoundingBox boundingb = viewModel.getBoundingBox();
-                    double minX = boundingb.getMinX();
-                    double minY = boundingb.getMinY();
-                    double maxX = boundingb.getMaxX();
-                    double maxY = boundingb.getMaxY();
+                    double minX = drawer.getRenderBox().getMinX();
+                    double minY = drawer.getRenderBox().getMinY();
+                    double maxX = drawer.getRenderBox().getMaxX();
+                    double maxY = drawer.getRenderBox().getMaxY();
                     com.vividsolutions.jts.geom.Polygon bboxG = new GeometryFactory().createPolygon(new Coordinate[]{new Coordinate(minX, maxY), new Coordinate(maxX, maxY), new Coordinate(maxX, minY), new Coordinate(minX, minY), new Coordinate(minX, maxY)});
                     String attributes = "";
                     String[] attrarray = ((JDBCRenderRule) renderRule).getAttributes();
@@ -36,8 +35,8 @@ public class JDBCRenderRule extends VectorRenderRule {
                             attributes += "," + attribute;
                         }
                     }
-                    String bbox = "ST_Transform(ST_GeomFromText('" + bboxG.toText() + "'," + viewModel.getSrid() + ")," + viewModel.getSrid() + ")";
-                    String query = "SELECT ST_AsBinary(ST_Transform(" + geometry_column + "," + viewModel.getSrid() + ")) " + attributes + " FROM " + jdbcVectorData.getJdbcDataTable().getTableName() + " WHERE ";
+                    String bbox = "ST_Transform(ST_GeomFromText('" + bboxG.toText() + "'," + drawer.getViewModel().getSrid() + ")," + drawer.getViewModel().getSrid() + ")";
+                    String query = "SELECT ST_AsBinary(ST_Transform(" + geometry_column + "," + drawer.getViewModel().getSrid() + ")) " + attributes + " FROM " + jdbcVectorData.getJdbcDataTable().getTableName() + " WHERE ";
                     if (dbType == JDBCConnection.DBType.H2 || dbType == JDBCConnection.DBType.PostgreSQL) {
                         query += geometry_column + " && " + bbox;
                     } else if (dbType == JDBCConnection.DBType.SQLite) {
@@ -62,11 +61,14 @@ public class JDBCRenderRule extends VectorRenderRule {
                         }
                     }
                     query += ";";
-                    System.out.println(query);
+                    //System.out.println(query);
 
                     Statement stmt = jdbcVectorData.getJdbcDataTable().getJdbcConnection().getConnection().createStatement();
                     ResultSet rs = stmt.executeQuery(query);
                     while (rs.next()) {
+                        if (drawer.getDraw().isStop()) {
+                            break;
+                        }
                         String[] labels = null;
                         if (attrarray != null && attrarray.length > 0) {
                             labels = new String[attrarray.length];
@@ -74,7 +76,7 @@ public class JDBCRenderRule extends VectorRenderRule {
                                 labels[i] = rs.getString(i + 2);
                             }
                         }
-                        drawGeom(new WKBReader().read(rs.getBytes(1)), labels, g2d, viewModel);
+                        drawGeom(new WKBReader().read(rs.getBytes(1)), labels, g2d, drawer);
                     }
                     rs.close();
                     stmt.close();

@@ -33,27 +33,18 @@ public class ViewModel {
         unitSize=Math.pow(2,zoomLevel)/scale;
     }
 
-    public double unitToPixel(double c) {
-        return c * unitSize;
-    }
-
-    public double pixelToUnit(double p) {
-        return p/unitSize;
-    }
-
-
     public Coordinate pixelsToCoordinate(Point p) {
-        return new Coordinate(mapCenter.x+pixelToUnit(p.x-centerPoint.x),mapCenter.y-pixelToUnit(p.y-centerPoint.y));
+        return new Coordinate(mapCenter.x+Utils.pixelToUnit(p.x-centerPoint.x,unitSize),mapCenter.y-Utils.pixelToUnit(p.y-centerPoint.y,unitSize));
     }
 
-    public Point coordinateToPixels(Coordinate c) {
+    public Point coordinateToScreenPixels(Coordinate c) {
         Point point = new Point();
-        point.setLocation(centerPoint.x + unitToPixel(c.x - mapCenter.x),centerPoint.y - unitToPixel(c.y - mapCenter.y));
+        point.setLocation(centerPoint.x + Utils.unitToPixel(c.x - mapCenter.x, unitSize),centerPoint.y - Utils.unitToPixel(c.y - mapCenter.y,unitSize));
         return point;
     }
 
     public BoundingBox getBoundingBox() {
-        return new BoundingBox(mapCenter.x-pixelToUnit(centerPoint.x),mapCenter.y-pixelToUnit(centerPoint.y),pixelToUnit(screenSize.getWidth()),pixelToUnit(screenSize.getHeight()));
+        return new BoundingBox(mapCenter.x-Utils.pixelToUnit(centerPoint.x,unitSize),mapCenter.y-Utils.pixelToUnit(centerPoint.y,unitSize),Utils.pixelToUnit(screenSize.getWidth(),unitSize),Utils.pixelToUnit(screenSize.getHeight(),unitSize));
     }
 
     public void setMapCenter(Coordinate mapCenter) {
@@ -76,5 +67,9 @@ public class ViewModel {
         Point p = new Point();
         p.setLocation(screenSize.getWidth() / 2, screenSize.getHeight() / 2);
         centerPoint=p;
+    }
+
+    public double getUnitSize() {
+        return unitSize;
     }
 }

@@ -1,6 +1,8 @@
 package ffk27.mapviewer2;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import ffk27.mapviewer2.*;
+import javafx.geometry.BoundingBox;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -98,5 +100,19 @@ public class Utils {
         DocumentBuilder builder = factory.newDocumentBuilder();
         InputSource is = new InputSource(new StringReader(xml));
         return builder.parse(is);
+    }
+
+    public static double unitToPixel(double c, double unitSize) {
+        return c * unitSize;
+    }
+
+    public static double pixelToUnit(double p, double unitSize) {
+        return p/unitSize;
+    }
+
+    public static Point coordinateToPixels(Coordinate c, double unitSize, BoundingBox boundingBox) {
+        Point point = new Point();
+        point.setLocation(unitToPixel(c.x-boundingBox.getMinX(),unitSize),unitToPixel(boundingBox.getMaxY()-c.y,unitSize));
+        return point;
     }
 }

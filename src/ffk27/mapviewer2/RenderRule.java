@@ -1,5 +1,6 @@
 package ffk27.mapviewer2;
 
+import javafx.geometry.BoundingBox;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -21,7 +22,7 @@ public abstract class RenderRule {
     protected float zoommin;
     protected float zoommax;
 
-    public abstract void draw(RenderRule renderRule, Graphics2D g2d, ViewModel viewModel);
+    public abstract void draw(RenderRule renderRule, Graphics2D g2d, Drawer drawer);
 
     public RenderRule getParent() {
         return parent;

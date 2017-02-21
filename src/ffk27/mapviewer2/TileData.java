@@ -20,8 +20,8 @@ public class TileData extends GeoDataSource {
     private String urlformat;
     private List<Tile> tileCache;
     private BoundingBox bounds;
-    private double extent;
-    private int minzoom,maxzoom;
+    public double extent;
+    public int minzoom,maxzoom;
 
     public TileData(String name, int srid, String urlformat, BoundingBox bounds, int minzoom, int maxzoom) {
         super(name,srid);
@@ -96,30 +96,5 @@ public class TileData extends GeoDataSource {
             }
         }
         return tile;
-    }
-
-    public List<Tile> getTiles(BoundingBox boundingBox, float zoomlvl) {
-        List<Tile> tiles = null;
-        int z = Math.round(zoomlvl);
-        if (z >= minzoom && z <= maxzoom) {
-            tiles = new ArrayList<>();
-            double size = extent * 2 / Math.pow(2, z);
-
-            int xt1 = (int) Math.floor((boundingBox.getMinX() + extent) / size);
-            int xt2 = (int) Math.ceil((boundingBox.getMaxX() + extent) / size);
-
-            int yt1 = (int) Math.floor((extent - boundingBox.getMaxY()) / size);
-            int yt2 = (int) Math.ceil((extent - boundingBox.getMinY()) / size);
-
-            for (int xt = xt1; xt < xt2; xt++) {
-                for (int yt = yt1; yt < yt2; yt++) {
-                    Tile t = getTile(xt, yt, z);
-                    if (t != null) {
-                        tiles.add(t);
-                    }
-                }
-            }
-        }
-        return tiles;
     }
 }

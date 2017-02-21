@@ -9,10 +9,10 @@ import java.awt.*;
  */
 public class GeomsRenderRule extends VectorRenderRule {
     @Override
-    public void draw(RenderRule renderRule, Graphics2D g2d, ViewModel viewModel) {
+    public void draw(RenderRule renderRule, Graphics2D g2d, Drawer drawer) {
         Geoms geoms = (Geoms)dataSource;
         for (Geometry geometry : geoms.getGeometries()) {
-            drawGeom(geometry,null,g2d,viewModel);
+            drawGeom(geometry,null,g2d,drawer);
         }
     }
 }

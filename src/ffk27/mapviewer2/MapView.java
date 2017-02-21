@@ -3,11 +3,9 @@ package ffk27.mapviewer2;
 import com.vividsolutions.jts.geom.*;
 import javafx.geometry.BoundingBox;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.Point;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +15,8 @@ import java.util.List;
 public class MapView extends Canvas {
     private ViewModel viewModel;
     private List<RenderRule> renderRules;
+    private RasterImage mapImage;
+    private Drawer[] drawers;
 
     public MapView(Coordinate coordinate, float zoomLevel, int srid) {
         viewModel = new ViewModel();
@@ -24,6 +24,10 @@ public class MapView extends Canvas {
         viewModel.setMapCenter(coordinate);
         viewModel.setZoomLevel(zoomLevel);
         viewModel.setSrid(srid);
+        drawers=new Drawer[Runtime.getRuntime().availableProcessors()];
+        for (int i=0; i<drawers.length; i++) {
+            drawers[i] = new Drawer(this, renderRules);
+        }
     }
 
     public void changeMapCenter(Coordinate mapCenter) {
@@ -39,24 +43,52 @@ public class MapView extends Canvas {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        draw((Graphics2D)g);
-    }
-
-    private void draw(Graphics2D g2d) {
-        for (RenderRule renderRule : renderRules) {
-            drawAllRules(renderRule,g2d);
-        }
-    }
-
-    private void drawAllRules(RenderRule renderRule, Graphics2D g2d) {
-        if ((renderRule.getZoommin() == 0 && renderRule.getZoommax() == 0) || (viewModel.getZoomLevel() >= renderRule.getZoommin() && viewModel.getZoomLevel() <= renderRule.getZoommax())) {
-            renderRule.draw(renderRule, g2d, viewModel);
-            if (renderRule.getRules() != null) {
-                for (RenderRule r : renderRule.getRules()) {
-                    drawAllRules(r, g2d);
-                }
+        boolean redrawneeded=false;
+        if (mapImage!=null) {
+            Point tl = viewModel.coordinateToScreenPixels(new Coordinate(mapImage.getBoundingBox().getMinX(), mapImage.getBoundingBox().getMaxY()));
+            Point br = viewModel.coordinateToScreenPixels(new Coordinate(mapImage.getBoundingBox().getMaxX(), mapImage.getBoundingBox().getMinY()));
+            g.drawImage(mapImage.getImage(), tl.x, tl.y, br.x, br.y, 0, 0, mapImage.getImage().getWidth(), mapImage.getImage().getHeight(), null);
+            if (!mapImage.getBoundingBox().equals(viewModel.getBoundingBox())) {
+                redrawneeded=true;
             }
         }
+        else {
+            redrawneeded=true;
+        }
+        if (redrawneeded) {
+            if (renderRules!=null && renderRules.size()>0) {
+                draw();
+            }
+        }
+    }
+
+    private void draw() {
+        BoundingBox bboxscreen = viewModel.getBoundingBox();
+        double width = bboxscreen.getWidth()/drawers.length;
+        for (int i=0; i<drawers.length; i++) {
+            double minX = bboxscreen.getMinX()+width*i;
+            BoundingBox bbox = new BoundingBox(minX,bboxscreen.getMinY(),width,bboxscreen.getHeight());
+            drawers[i].renderArea(bbox,viewModel.getZoomLevel(),getWidth()/Runtime.getRuntime().availableProcessors(),getHeight(),viewModel.getUnitSize());
+        }
+    }
+
+    public void updateMapImage() {
+        BufferedImage bufferedImage = new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_ARGB);
+        mapImage=new RasterImage(bufferedImage,viewModel.getBoundingBox());
+        Graphics g = bufferedImage.createGraphics();
+        for (Drawer d : drawers) {
+            if (d.getRasterImage() != null) {
+                BoundingBox boundingBox = d.getRasterImage().getBoundingBox();
+                Point tl = viewModel.coordinateToScreenPixels(new Coordinate(boundingBox.getMinX(), boundingBox.getMaxY()));
+                Point br = viewModel.coordinateToScreenPixels(new Coordinate(boundingBox.getMaxX(), boundingBox.getMinY()));
+                g.drawImage(d.getRasterImage().getImage(), tl.x, tl.y, br.x, br.y, 0, 0, d.getRasterImage().getImage().getWidth(), d.getRasterImage().getImage().getHeight(), null);
+            }
+        }
+        repaint();
+    }
+
+    private void updateMap(RasterImage rasterImage) {
+        repaint();
     }
 
     public List<RenderRule> getRenderRules() {
@@ -65,9 +97,17 @@ public class MapView extends Canvas {
 
     public void setRenderRules(List<RenderRule> renderRules) {
         this.renderRules = renderRules;
+        for (int i=0; i<drawers.length; i++) {
+            drawers[i].setRenderRules(renderRules);
+        }
+        repaint();
     }
 
     public ViewModel getViewModel() {
         return viewModel;
+    }
+
+    public Drawer[] getDrawers() {
+        return drawers;
     }
 }

@@ -25,37 +25,37 @@ public abstract class VectorRenderRule extends RenderRule {
     protected List<Style> styles;
     protected int geomType;
 
-    protected void drawGeom(Geometry g, String[] labels, Graphics2D g2d, ViewModel viewModel) {
+    protected void drawGeom(Geometry g, String[] labels, Graphics2D g2d, Drawer drawer) {
         Path2D path = new Path2D.Double(Path2D.WIND_EVEN_ODD);
         for (int i = 0; i < g.getNumGeometries(); i++) {
             if (g.getNumPoints() > 0) {
                 String geometryType = g.getGeometryN(i).getGeometryType();
                 Point screenpos;
                 if (geometryType == "Point") {
-                    screenpos = viewModel.coordinateToPixels(g.getGeometryN(i).getCoordinate());
+                    screenpos = Utils.coordinateToPixels(g.getGeometryN(i).getCoordinate(),drawer.getUnitSize(),drawer.getDraw().getRenderBox() );
                     path.moveTo(screenpos.x,screenpos.y);
                 } else {
                     if (geometryType == "Polygon") {
                         com.vividsolutions.jts.geom.Polygon p = (com.vividsolutions.jts.geom.Polygon) g.getGeometryN(i);
-                        screenpos = viewModel.coordinateToPixels(p.getExteriorRing().getCoordinates()[0]);
+                        screenpos = Utils.coordinateToPixels(p.getExteriorRing().getCoordinates()[0],drawer.getUnitSize(),drawer.getDraw().getRenderBox() );
                         path.moveTo(screenpos.x, screenpos.y);
                         for (int i2 = 1; i2 < p.getExteriorRing().getCoordinates().length; i2++) {
-                            screenpos = viewModel.coordinateToPixels(p.getExteriorRing().getCoordinates()[i2]);
+                            screenpos = Utils.coordinateToPixels(p.getExteriorRing().getCoordinates()[i2],drawer.getUnitSize(),drawer.getDraw().getRenderBox() );
                             path.lineTo(screenpos.x, screenpos.y);
                         }
                         for (int i2 = 0; i2 < p.getNumInteriorRing(); i2++) {
-                            screenpos = viewModel.coordinateToPixels(p.getInteriorRingN(i2).getCoordinates()[0]);
+                            screenpos = Utils.coordinateToPixels(p.getInteriorRingN(i2).getCoordinates()[0],drawer.getUnitSize(),drawer.getDraw().getRenderBox() );
                             path.moveTo(screenpos.x, screenpos.y);
                             for (int i3 = 1; i3 < p.getInteriorRingN(i2).getCoordinates().length; i3++) {
-                                screenpos = viewModel.coordinateToPixels(p.getInteriorRingN(i2).getCoordinates()[i3]);
+                                screenpos = Utils.coordinateToPixels(p.getInteriorRingN(i2).getCoordinates()[i3],drawer.getUnitSize(),drawer.getDraw().getRenderBox() );
                                 path.lineTo(screenpos.x, screenpos.y);
                             }
                         }
                     } else if (geometryType == "LineString") {
-                        screenpos = viewModel.coordinateToPixels(g.getGeometryN(i).getCoordinates()[0]);
+                        screenpos = Utils.coordinateToPixels(g.getGeometryN(i).getCoordinates()[0],drawer.getUnitSize(),drawer.getDraw().getRenderBox() );
                         path.moveTo(screenpos.x, screenpos.y);
                         for (int i2 = 1; i2 < g.getGeometryN(i).getCoordinates().length; i2++) {
-                            screenpos = viewModel.coordinateToPixels(g.getGeometryN(i).getCoordinates()[i2]);
+                            screenpos = Utils.coordinateToPixels(g.getGeometryN(i).getCoordinates()[i2],drawer.getUnitSize(),drawer.getDraw().getRenderBox() );
                             path.lineTo(screenpos.x, screenpos.y);
                         }
                     }
@@ -89,7 +89,7 @@ public abstract class VectorRenderRule extends RenderRule {
             if (((TextStyle)style).getFormat()!=null && !((TextStyle)style).getFormat().isEmpty()) {
                 String[] texts = ((TextStyle) style).getFormat().split("\\\\n");
                 for (int i=0; i<texts.length; i++) {
-                    String[] attrs = ((JDBCRenderRule)style.getStyleRule()).getAttributes();
+                    String[] attrs = style.getStyleRule().getAttributes();
                     for (int i2 = 0; i2 < attrs.length; i2++) {
                         String attrname = attrs[i2];
                         if (texts[i].contains("{" + attrname + "}")) {
