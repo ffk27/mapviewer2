@@ -16,11 +16,20 @@ import java.util.List;
  * Created by ffk27 on 9-8-16.
  */
 public abstract class RenderRule {
+    private boolean enabled;
     protected RenderRule parent;
     protected List<RenderRule> rules;
     protected GeoDataSource dataSource;
     protected float zoommin;
     protected float zoommax;
+
+    public RenderRule() {
+        enabled = true;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
 
     public abstract void draw(RenderRule renderRule, Graphics2D g2d, Drawer drawer);
 
@@ -65,7 +74,7 @@ public abstract class RenderRule {
     }
 
     private static GeoDataSource parentDataSource(RenderRule renderRule) {
-        if (renderRule!=null) {
+        if (renderRule != null) {
             if (renderRule.dataSource != null) {
                 return renderRule.dataSource;
             } else if (renderRule.getParent() != null) {
@@ -80,10 +89,10 @@ public abstract class RenderRule {
         try {
             Document doc = Utils.loadXMLFromString(xml);
             Node nRule = doc.getFirstChild();
-            for (int i=0; i<nRule.getChildNodes().getLength(); i++) {
+            for (int i = 0; i < nRule.getChildNodes().getLength(); i++) {
                 Node child = nRule.getChildNodes().item(i);
                 if (child.getNodeName().equals("rule")) {
-                    renderRules.add(getStyleRule(child,null, dataSources));
+                    renderRules.add(getStyleRule(child, null, dataSources));
                 }
             }
         } catch (ParserConfigurationException e) {
@@ -100,32 +109,30 @@ public abstract class RenderRule {
 
     private static RenderRule getStyleRule(Node nRule, RenderRule parent, List<GeoDataSource> dataSources) {
         NamedNodeMap namedNodeMap = nRule.getAttributes();
-        GeoDataSource geoDataSource=null;
-        String sourceName = Utils.getAttributeStringValue("sourcename",namedNodeMap);
-        if (sourceName!=null) {
+        GeoDataSource geoDataSource = null;
+        String sourceName = Utils.getAttributeStringValue("sourcename", namedNodeMap);
+        if (sourceName != null) {
             // if sourcename isset, find the matching geodatasource object.
             for (GeoDataSource dataSource : dataSources) {
                 if (dataSource.getName().equals(sourceName)) {
-                    geoDataSource=dataSource;
+                    geoDataSource = dataSource;
                     break;
                 }
             }
-            if (geoDataSource==null) {
-                System.out.println("Error: source "+sourceName+" unknown!");
+            if (geoDataSource == null) {
+                System.out.println("Error: source " + sourceName + " unknown!");
             }
         } else {
             geoDataSource = parentDataSource(parent);
         }
 
-        if (geoDataSource!=null) {
-            RenderRule renderRule=null;
+        if (geoDataSource != null) {
+            RenderRule renderRule = null;
             if (geoDataSource instanceof JDBCVectorData) {
                 renderRule = new JDBCRenderRule();
-            }
-            else if (geoDataSource instanceof Geoms) {
+            } else if (geoDataSource instanceof Geoms) {
                 renderRule = new GeomsRenderRule();
-            }
-            else if (geoDataSource instanceof TileData) {
+            } else if (geoDataSource instanceof TileData) {
                 renderRule = new TileRule();
             }
 
@@ -226,7 +233,7 @@ public abstract class RenderRule {
     }
 
     private static String[] getAllStatements(VectorRenderRule vectorRenderRule, String statements[]) {
-        if (vectorRenderRule!=null) {
+        if (vectorRenderRule != null) {
             String[] stmts = null;
             if (vectorRenderRule.getStatement() != null) {
                 if (statements != null) {
@@ -252,7 +259,7 @@ public abstract class RenderRule {
     }
 
     private static String[] getAllAttributes(VectorRenderRule vectorRenderRule, String attributes[]) {
-        if (vectorRenderRule!=null) {
+        if (vectorRenderRule != null) {
             String[] attrs = null;
             if (vectorRenderRule.getAttributes() != null) {
                 if (attributes != null) {

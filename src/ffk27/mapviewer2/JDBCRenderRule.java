@@ -23,10 +23,10 @@ public class JDBCRenderRule extends VectorRenderRule {
                 try {
                     JDBCConnection.DBType dbType = jdbcVectorData.getJdbcDataTable().getJdbcConnection().getDbType();
                     String geometry_column = jdbcVectorData.getGeometryColumn();
-                    double minX = drawer.getRenderBox().getMinX();
-                    double minY = drawer.getRenderBox().getMinY();
-                    double maxX = drawer.getRenderBox().getMaxX();
-                    double maxY = drawer.getRenderBox().getMaxY();
+                    double minX = drawer.getDrawthread().getRenderBox().getMinX();
+                    double minY = drawer.getDrawthread().getRenderBox().getMinY();
+                    double maxX = drawer.getDrawthread().getRenderBox().getMaxX();
+                    double maxY = drawer.getDrawthread().getRenderBox().getMaxY();
                     com.vividsolutions.jts.geom.Polygon bboxG = new GeometryFactory().createPolygon(new Coordinate[]{new Coordinate(minX, maxY), new Coordinate(maxX, maxY), new Coordinate(maxX, minY), new Coordinate(minX, minY), new Coordinate(minX, maxY)});
                     String attributes = "";
                     String[] attrarray = ((JDBCRenderRule) renderRule).getAttributes();
@@ -66,7 +66,7 @@ public class JDBCRenderRule extends VectorRenderRule {
                     Statement stmt = jdbcVectorData.getJdbcDataTable().getJdbcConnection().getConnection().createStatement();
                     ResultSet rs = stmt.executeQuery(query);
                     while (rs.next()) {
-                        if (drawer.getDraw().isStop()) {
+                        if (drawer.getDrawthread().isStop()) {
                             break;
                         }
                         String[] labels = null;

@@ -69,6 +69,7 @@ public class Controller implements MouseListener, MouseMotionListener, MouseWhee
         } else {
             zoomIn(e.getPoint());
         }
+        System.out.println(mapView.getViewModel().getZoomLevel());
     }
 
     private void zoomIn(Point p) {

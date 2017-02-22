@@ -19,7 +19,7 @@ public class Drawer {
     private int width,height;
     private MapView mapView;
     private double unitSize;
-    private Draw drawzor;
+    private Draw drawthread;
 
     public Drawer(MapView mapView, java.util.List<RenderRule> renderRules) {
         this.mapView=mapView;
@@ -28,7 +28,7 @@ public class Drawer {
 
     public boolean isLastDrawer(Draw draw) {
         for (Drawer d : mapView.getDrawers()) {
-            if (d.getDraw()==null || !d.getDraw().equals(draw) && d.getDraw().isAlive()) {
+            if (d.getDrawthread()==null || !d.getDrawthread().equals(draw) && d.getDrawthread().isAlive()) {
                 return false;
             }
         }
@@ -37,20 +37,23 @@ public class Drawer {
 
     public void done(RasterImage rasterImage) {
         this.rasterImage=rasterImage;
-        mapView.updateMapImage();
+        if (isLastDrawer(drawthread)) {
+            mapView.updateMapImage();
+        }
     }
 
     public void renderArea(BoundingBox renderBox, float zoomLevel, int width, int height, double unitSize) {
-        this.renderBox = renderBox;
+        rasterImage=null;
         this.zoomLevel=zoomLevel;
         this.width=width;
         this.height=height;
         this.unitSize=unitSize;
-        if (this.drawzor != null && this.drawzor.isAlive()) {
-            this.drawzor.stopt();
+        this.renderBox=renderBox;
+        if (drawthread != null && drawthread.isAlive()) {
+            drawthread.stopt();
         }
-        this.drawzor = new Draw(this,width,height,zoomLevel,renderBox);
-        this.drawzor.start();
+        drawthread = new Draw(renderBox);
+        drawthread.start();
     }
 
     public BoundingBox getRenderBox() {
@@ -65,14 +68,6 @@ public class Drawer {
         return rasterImage;
     }
 
-    public float getZoomLevel() {
-        return zoomLevel;
-    }
-
-    public Draw getDraw() {
-        return drawzor;
-    }
-
     public double getUnitSize() {
         return unitSize;
     }
@@ -83,5 +78,71 @@ public class Drawer {
 
     public void setRenderRules(List<RenderRule> renderRules) {
         this.renderRules = renderRules;
+    }
+
+    public Draw getDrawthread() {
+        return drawthread;
+    }
+
+    public Drawer getDrawer() {
+        return this;
+    }
+
+    public class Draw extends Thread {
+        private boolean stop;
+        private BoundingBox renderBox;
+
+        public Draw(BoundingBox renderBox) {
+            this.renderBox = renderBox;
+        }
+
+        @Override
+        public void run() {
+            super.run();
+            draw();
+        }
+
+        public void draw() {
+            try {
+                Thread.sleep(150);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (!stop) {
+                RasterImage rasterImage = new RasterImage(new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB), renderBox);
+                Graphics2D g2d = rasterImage.getImage().createGraphics();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                for (RenderRule renderRule : renderRules) {
+                    if (!stop) {
+                        drawAllRules(renderRule, g2d);
+                    }
+                }
+                done(rasterImage);
+            }
+        }
+
+        private void drawAllRules(RenderRule renderRule, Graphics2D g2d) {
+            if ((renderRule.getZoommin() == 0 && renderRule.getZoommax() == 0) || (zoomLevel >= renderRule.getZoommin() && zoomLevel <= renderRule.getZoommax())) {
+                renderRule.draw(renderRule, g2d, getDrawer());
+                if (renderRule.getRules() != null) {
+                    for (RenderRule r : renderRule.getRules()) {
+                        drawAllRules(r, g2d);
+                    }
+                }
+            }
+        }
+
+        public boolean isStop() {
+            return stop;
+        }
+
+        public void stopt() {
+            stop = true;
+        }
+
+        public BoundingBox getRenderBox() {
+            return renderBox;
+        }
     }
 }

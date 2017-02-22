@@ -16,12 +16,11 @@ public class TileRule extends RenderRule {
     @Override
     public void draw(RenderRule renderRule, Graphics2D g2d, Drawer drawer) {
         this.drawer=drawer;
-        TileData tileData = (TileData)dataSource;
-        java.util.List<Tile> tiles = getTiles(drawer.getRenderBox(),drawer.getViewModel().getZoomLevel());
+        java.util.List<Tile> tiles = getTiles(drawer.getDrawthread().getRenderBox(),drawer.getViewModel().getZoomLevel());
         if (tiles!=null) {
             for (Tile tile : tiles) {
-                Point tl = Utils.coordinateToPixels(new Coordinate(tile.getBoundingBox().getMinX(), tile.getBoundingBox().getMaxY()),drawer.getUnitSize(),drawer.getRenderBox());
-                Point br = Utils.coordinateToPixels(new Coordinate(tile.getBoundingBox().getMaxX(), tile.getBoundingBox().getMinY()),drawer.getUnitSize(),drawer.getRenderBox());
+                Point tl = Utils.coordinateToPixels(new Coordinate(tile.getBoundingBox().getMinX(), tile.getBoundingBox().getMaxY()),drawer.getUnitSize(),drawer.getDrawthread().getRenderBox());
+                Point br = Utils.coordinateToPixels(new Coordinate(tile.getBoundingBox().getMaxX(), tile.getBoundingBox().getMinY()),drawer.getUnitSize(),drawer.getDrawthread().getRenderBox());
                 g2d.drawImage(tile.getImage(), tl.x, tl.y, br.x, br.y, 0, 0, tile.getImage().getWidth(), tile.getImage().getHeight(), null);
             }
         }
@@ -45,7 +44,7 @@ public class TileRule extends RenderRule {
 
             for (int xt = xt1; xt < xt2; xt++) {
                 for (int yt = yt1; yt < yt2; yt++) {
-                    if (drawer.getDraw().isStop()) {
+                    if (drawer.getDrawthread().isStop()) {
                         break;
                     }
                     Tile t = ((TileData) dataSource).getTile(xt, yt, z);

@@ -3,6 +3,7 @@ package ffk27.mapviewer2;
 import com.vividsolutions.jts.geom.*;
 import javafx.geometry.BoundingBox;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
@@ -12,9 +13,10 @@ import java.util.List;
 /**
  * Created by Gebruiker on 2/5/2017.
  */
-public class MapView extends Canvas {
+public class MapView extends JPanel {
     private ViewModel viewModel;
     private List<RenderRule> renderRules;
+    private List<GeoDataSource> enabledDataSources;
     private RasterImage mapImage;
     private Drawer[] drawers;
 
@@ -24,7 +26,8 @@ public class MapView extends Canvas {
         viewModel.setMapCenter(coordinate);
         viewModel.setZoomLevel(zoomLevel);
         viewModel.setSrid(srid);
-        drawers=new Drawer[Runtime.getRuntime().availableProcessors()];
+        int availableProcessors = Runtime.getRuntime().availableProcessors();
+        drawers=new Drawer[(int)Math.pow(Math.ceil(Math.sqrt(availableProcessors)),2)];
         for (int i=0; i<drawers.length; i++) {
             drawers[i] = new Drawer(this, renderRules);
         }
@@ -62,37 +65,48 @@ public class MapView extends Canvas {
         }
     }
 
+
+
     private void draw() {
         BoundingBox bboxscreen = viewModel.getBoundingBox();
-        double width = bboxscreen.getWidth()/drawers.length;
-        for (int i=0; i<drawers.length; i++) {
-            double minX = bboxscreen.getMinX()+width*i;
-            BoundingBox bbox = new BoundingBox(minX,bboxscreen.getMinY(),width,bboxscreen.getHeight());
-            drawers[i].renderArea(bbox,viewModel.getZoomLevel(),getWidth()/Runtime.getRuntime().availableProcessors(),getHeight(),viewModel.getUnitSize());
+        new DataCollect(bboxscreen).start();
+
+        int sqrt = (int)Math.sqrt(drawers.length);
+        double width = bboxscreen.getWidth()/sqrt;
+        double height = bboxscreen.getHeight()/sqrt;
+        for (int i=0; i<sqrt; i++) {
+            double minY = bboxscreen.getMaxY()-height*(i+1);
+            for (int i2=0; i2<sqrt; i2++) {
+                Drawer drawer = drawers[i*sqrt+i2];
+                double minX = bboxscreen.getMinX()+width*i2;
+                BoundingBox bbox = new BoundingBox(minX,minY,width,height);
+                System.out.println(bbox);
+                if (drawer.getRasterImage() == null || (drawer.getRasterImage() != null && !drawer.getRasterImage().getBoundingBox().equals(bbox))) {
+                    drawer.renderArea(bbox,viewModel.getZoomLevel(),getWidth()/sqrt,getHeight()/sqrt,viewModel.getUnitSize());
+                }
+            }
         }
     }
 
     public void updateMapImage() {
         BufferedImage bufferedImage = new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_ARGB);
         mapImage=new RasterImage(bufferedImage,viewModel.getBoundingBox());
-        Graphics g = bufferedImage.createGraphics();
+        Graphics2D g2d = bufferedImage.createGraphics();
         for (Drawer d : drawers) {
             if (d.getRasterImage() != null) {
-                BoundingBox boundingBox = d.getRasterImage().getBoundingBox();
-                Point tl = viewModel.coordinateToScreenPixels(new Coordinate(boundingBox.getMinX(), boundingBox.getMaxY()));
-                Point br = viewModel.coordinateToScreenPixels(new Coordinate(boundingBox.getMaxX(), boundingBox.getMinY()));
-                g.drawImage(d.getRasterImage().getImage(), tl.x, tl.y, br.x, br.y, 0, 0, d.getRasterImage().getImage().getWidth(), d.getRasterImage().getImage().getHeight(), null);
+                if (d.getRasterImage().getBoundingBox().equals(d.getRenderBox())) {
+                    BoundingBox boundingBox = d.getRasterImage().getBoundingBox();
+                    Point tl = viewModel.coordinateToScreenPixels(new Coordinate(boundingBox.getMinX(), boundingBox.getMaxY()));
+                    Point br = viewModel.coordinateToScreenPixels(new Coordinate(boundingBox.getMaxX(), boundingBox.getMinY()));
+                    g2d.drawImage(d.getRasterImage().getImage(), tl.x, tl.y, br.x, br.y, 0, 0, d.getRasterImage().getImage().getWidth(), d.getRasterImage().getImage().getHeight(), null);
+                }
+                else {
+                    draw();
+                    break;
+                }
             }
         }
         repaint();
-    }
-
-    private void updateMap(RasterImage rasterImage) {
-        repaint();
-    }
-
-    public List<RenderRule> getRenderRules() {
-        return renderRules;
     }
 
     public void setRenderRules(List<RenderRule> renderRules) {
@@ -100,6 +114,7 @@ public class MapView extends Canvas {
         for (int i=0; i<drawers.length; i++) {
             drawers[i].setRenderRules(renderRules);
         }
+        enabledDataSources = GeoDataSource.getAllEnabledSources(renderRules);
         repaint();
     }
 
@@ -109,5 +124,21 @@ public class MapView extends Canvas {
 
     public Drawer[] getDrawers() {
         return drawers;
+    }
+
+    public class DataCollect extends Thread {
+        private BoundingBox bboxscreen;
+
+        public DataCollect(BoundingBox bboxscreen) {
+            this.bboxscreen = bboxscreen;
+        }
+
+        @Override
+        public void run() {
+            super.run();
+            for (GeoDataSource dataSource : GeoDataSource.getAllEnabledSources(renderRules)) {
+                System.out.println(dataSource.getName());
+            }
+        }
     }
 }
