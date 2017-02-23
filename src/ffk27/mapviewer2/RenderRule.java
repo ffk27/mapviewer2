@@ -73,17 +73,6 @@ public abstract class RenderRule {
         this.dataSource = dataSource;
     }
 
-    private static GeoDataSource parentDataSource(RenderRule renderRule) {
-        if (renderRule != null) {
-            if (renderRule.dataSource != null) {
-                return renderRule.dataSource;
-            } else if (renderRule.getParent() != null) {
-                return parentDataSource(renderRule.getParent());
-            }
-        }
-        return null;
-    }
-
     public static List<RenderRule> parseXMLStyle(String xml, List<GeoDataSource> dataSources) {
         List<RenderRule> renderRules = new ArrayList<>();
         try {
@@ -91,7 +80,7 @@ public abstract class RenderRule {
             Node nRule = doc.getFirstChild();
             for (int i = 0; i < nRule.getChildNodes().getLength(); i++) {
                 Node child = nRule.getChildNodes().item(i);
-                if (child.getNodeName().equals("rule")) {
+                if (child.getNodeName().toLowerCase().equals("source")) {
                     renderRules.add(getStyleRule(child, null, dataSources));
                 }
             }
@@ -122,8 +111,9 @@ public abstract class RenderRule {
             if (geoDataSource == null) {
                 System.out.println("Error: source " + sourceName + " unknown!");
             }
-        } else {
-            geoDataSource = parentDataSource(parent);
+        }
+        else if (parent!=null) {
+            geoDataSource=parent.getDataSource();
         }
 
         if (geoDataSource != null) {
@@ -169,7 +159,7 @@ public abstract class RenderRule {
                         vectorRenderRule.setStyles(new ArrayList<>());
                     }
                     Node node = nRule.getChildNodes().item(i);
-                    String nodename = node.getNodeName();
+                    String nodename = node.getNodeName().toLowerCase();
                     if (nodename.equals("path") || nodename.equals("circle") || nodename.equals("text")) { //current supported styletags
                         NamedNodeMap attributes = node.getAttributes();
                         Color fill = Utils.getAttributeColor("fill", attributes);
@@ -214,7 +204,8 @@ public abstract class RenderRule {
             boolean hasChilds = false;
             List<RenderRule> styleRules = null;
             for (int i = 0; i < nRule.getChildNodes().getLength(); i++) {
-                if (nRule.getChildNodes().item(i).getNodeName() == "rule") {
+                String nodeName = nRule.getChildNodes().item(i).getNodeName().toLowerCase();
+                if (nodeName.equals("rule") || nodeName.equals("if") || nodeName.equals("elseif") || nodeName.equals("else")) {
                     hasChilds = true;
                     if (styleRules == null) {
                         styleRules = new ArrayList<>();

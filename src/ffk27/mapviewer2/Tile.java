@@ -10,6 +10,13 @@ import java.awt.image.BufferedImage;
 public class Tile extends RasterImage {
     private int x,y,z;
 
+    public Tile(BoundingBox boundingBox, int x, int y, int z) {
+        super(boundingBox);
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
     public Tile(BufferedImage image, BoundingBox boundingBox, int x, int y, int z) {
         super(image, boundingBox);
         this.x = x;

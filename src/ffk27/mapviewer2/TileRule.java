@@ -16,44 +16,28 @@ public class TileRule extends RenderRule {
     @Override
     public void draw(RenderRule renderRule, Graphics2D g2d, Drawer drawer) {
         this.drawer=drawer;
-        java.util.List<Tile> tiles = getTiles(drawer.getDrawthread().getRenderBox(),drawer.getViewModel().getZoomLevel());
-        if (tiles!=null) {
-            for (Tile tile : tiles) {
-                Point tl = Utils.coordinateToPixels(new Coordinate(tile.getBoundingBox().getMinX(), tile.getBoundingBox().getMaxY()),drawer.getUnitSize(),drawer.getDrawthread().getRenderBox());
-                Point br = Utils.coordinateToPixels(new Coordinate(tile.getBoundingBox().getMaxX(), tile.getBoundingBox().getMinY()),drawer.getUnitSize(),drawer.getDrawthread().getRenderBox());
-                g2d.drawImage(tile.getImage(), tl.x, tl.y, br.x, br.y, 0, 0, tile.getImage().getWidth(), tile.getImage().getHeight(), null);
-            }
-        }
-    }
-
-    public java.util.List<Tile> getTiles(BoundingBox boundingBox, float zoomlvl) {
-        java.util.List<Tile> tiles = null;
-        int z = Math.round(zoomlvl);
-        int minzoom = ((TileData) dataSource).minzoom;
-        int maxzoom = ((TileData) dataSource).maxzoom;
-        double extent = ((TileData) dataSource).extent;
-        if (z >= minzoom && z <= maxzoom) {
-            tiles = new ArrayList<>();
-            double size = extent * 2 / Math.pow(2, z);
-
-            int xt1 = (int) Math.floor((boundingBox.getMinX() + extent) / size);
-            int xt2 = (int) Math.ceil((boundingBox.getMaxX() + extent) / size);
-
-            int yt1 = (int) Math.floor((extent - boundingBox.getMaxY()) / size);
-            int yt2 = (int) Math.ceil((extent - boundingBox.getMinY()) / size);
-
-            for (int xt = xt1; xt < xt2; xt++) {
-                for (int yt = yt1; yt < yt2; yt++) {
-                    if (drawer.getDrawthread().isStop()) {
-                        break;
-                    }
-                    Tile t = ((TileData) dataSource).getTile(xt, yt, z);
-                    if (t != null) {
-                        tiles.add(t);
+        if (drawer.getDrawthread().getRenderBox().intersects(((TileData)dataSource).getBounds())) {
+            Tile[] tiles = ((TileData)dataSource).getTiles(drawer.getDrawthread().getRenderBox(),drawer.getViewModel().getZoomLevel());
+            if (tiles!=null) {
+                for (Tile tile : tiles) {
+                    if (tile!=null) {
+                        Point tl = Utils.coordinateToPixels(new Coordinate(tile.getBoundingBox().getMinX(), tile.getBoundingBox().getMaxY()), drawer.getUnitSize(), drawer.getDrawthread().getRenderBox());
+                        Point br = Utils.coordinateToPixels(new Coordinate(tile.getBoundingBox().getMaxX(), tile.getBoundingBox().getMinY()), drawer.getUnitSize(), drawer.getDrawthread().getRenderBox());
+                        if (tile.getImage() != null) {
+                            g2d.drawImage(tile.getImage(), tl.x, tl.y, br.x, br.y, 0, 0, tile.getImage().getWidth(), tile.getImage().getHeight(), null);
+                        } else {
+                            g2d.setStroke(new BasicStroke(5f));
+                            g2d.setColor(Color.white);
+                            g2d.fillRect(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
+                            g2d.setColor(Color.black);
+                            g2d.drawLine(tl.x, tl.y, br.x, br.y);
+                            g2d.drawLine(br.x, tl.y, tl.x, br.y);
+                            g2d.drawRect(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
+                            g2d.drawString(tile.getTilePos()[0] + "," + tile.getTilePos()[1], tl.x + ((br.x - tl.x) / 2), tl.y + ((br.y - tl.y) / 2));
+                        }
                     }
                 }
             }
         }
-        return tiles;
     }
 }

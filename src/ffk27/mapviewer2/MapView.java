@@ -26,7 +26,7 @@ public class MapView extends JPanel {
         viewModel.setMapCenter(coordinate);
         viewModel.setZoomLevel(zoomLevel);
         viewModel.setSrid(srid);
-        int availableProcessors = Runtime.getRuntime().availableProcessors();
+        int availableProcessors = 1;//Runtime.getRuntime().availableProcessors();
         drawers=new Drawer[(int)Math.pow(Math.ceil(Math.sqrt(availableProcessors)),2)];
         for (int i=0; i<drawers.length; i++) {
             drawers[i] = new Drawer(this, renderRules);
@@ -69,7 +69,7 @@ public class MapView extends JPanel {
 
     private void draw() {
         BoundingBox bboxscreen = viewModel.getBoundingBox();
-        new DataCollect(bboxscreen).start();
+        //new DataCollect(bboxscreen).start();
 
         int sqrt = (int)Math.sqrt(drawers.length);
         double width = bboxscreen.getWidth()/sqrt;
@@ -80,7 +80,6 @@ public class MapView extends JPanel {
                 Drawer drawer = drawers[i*sqrt+i2];
                 double minX = bboxscreen.getMinX()+width*i2;
                 BoundingBox bbox = new BoundingBox(minX,minY,width,height);
-                System.out.println(bbox);
                 if (drawer.getRasterImage() == null || (drawer.getRasterImage() != null && !drawer.getRasterImage().getBoundingBox().equals(bbox))) {
                     drawer.renderArea(bbox,viewModel.getZoomLevel(),getWidth()/sqrt,getHeight()/sqrt,viewModel.getUnitSize());
                 }

@@ -11,13 +11,21 @@ public class RasterImage {
     private BufferedImage image;
     private BoundingBox boundingBox;
 
-    public RasterImage(BufferedImage image, BoundingBox boundingBox) {
-        this.image = image;
+    public RasterImage(BoundingBox boundingBox) {
         this.boundingBox = boundingBox;
+    }
+
+    public RasterImage(BufferedImage image, BoundingBox boundingBox) {
+        this(boundingBox);
+        this.image=image;
     }
 
     public BufferedImage getImage() {
         return image;
+    }
+
+    public void setImage(BufferedImage image) {
+        this.image = image;
     }
 
     public BoundingBox getBoundingBox() {
