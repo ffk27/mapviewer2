@@ -18,6 +18,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -114,5 +115,11 @@ public class Utils {
         Point point = new Point();
         point.setLocation(unitToPixel(c.x-boundingBox.getMinX(),unitSize),unitToPixel(boundingBox.getMaxY()-c.y,unitSize));
         return point;
+    }
+
+    public static float round(float d, int decimalPlace) {
+        BigDecimal bd = new BigDecimal(Float.toString(d));
+        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
+        return bd.floatValue();
     }
 }
