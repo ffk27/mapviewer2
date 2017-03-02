@@ -33,6 +33,7 @@ public class Renderer extends Thread {
 
         mapImage = new RasterImage(new BufferedImage(viewModel.getScreenSize().width,viewModel.getScreenSize().height,BufferedImage.TYPE_INT_ARGB), boundingBox);
         int z = (int)Math.floor(viewModel.getZoomLevel());
+
         double extent=0;
         if (viewModel.getSrid()==3857) {
             extent=-1*Utils.webmercator.getMinX();
@@ -69,7 +70,11 @@ public class Renderer extends Thread {
 
                 BoundingBox bbox = new BoundingBox(minX,minY,maxX-minX,maxY-minY);
 
-                drawers[(yt-yt1) * (xt2-xt1+1) + xt-xt1] = new Drawer(this,bbox,renderRules,viewModel,(int)Math.round(Utils.unitToPixel(maxX-minX,viewModel.getUnitSize())),(int)Math.round(Utils.unitToPixel(maxY-minY,viewModel.getUnitSize())),xt,yt,z);
+                int width = (int)Math.round(Utils.unitToPixel(maxX-minX,viewModel.getUnitSize()));
+                int height = (int)Math.round(Utils.unitToPixel(maxY-minY,viewModel.getUnitSize()));
+                if (width>0 && height>0) {
+                    drawers[(yt - yt1) * (xt2 - xt1 + 1) + xt - xt1] = new Drawer(this, bbox, renderRules, viewModel, width, height, xt, yt, z);
+                }
             }
         }
     }

@@ -152,7 +152,7 @@ public abstract class VectorRenderRule extends RenderRule {
         this.geomType = geomType;
     }
 
-    public static VectorRenderRule createRandom(GeoDataSource geoDataSource) {
+    public static VectorRenderRule createRandom(GeoDataSource geoDataSource, int geomType) {
         VectorRenderRule vectorRenderRule=null;
         if (geoDataSource instanceof JDBCVectorData) {
             vectorRenderRule=new JDBCRenderRule(geoDataSource);
@@ -161,7 +161,11 @@ public abstract class VectorRenderRule extends RenderRule {
             vectorRenderRule = new GeomsRenderRule(geoDataSource);
         }
         vectorRenderRule.setDataSource(geoDataSource);
-        Style s = new Style(vectorRenderRule,new Color(new Random().nextFloat(),new Random().nextFloat(),new Random().nextFloat(),1f),Color.BLACK,new BasicStroke(1f));
+        Color fill=null;
+        if (geomType!=2 && geomType!=5) {
+            fill = new Color(new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1f);
+        }
+        Style s = new Style(vectorRenderRule,fill,Color.BLACK,new BasicStroke(1f));
         List<Style> styles = new ArrayList<>();
         styles.add(s);
         vectorRenderRule.setStyles(styles);
