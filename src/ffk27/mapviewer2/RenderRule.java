@@ -23,7 +23,8 @@ public abstract class RenderRule {
     protected float zoommin;
     protected float zoommax;
 
-    public RenderRule() {
+    public RenderRule(GeoDataSource geoDataSource) {
+        this.dataSource=geoDataSource;
         enabled = true;
     }
 
@@ -119,11 +120,11 @@ public abstract class RenderRule {
         if (geoDataSource != null) {
             RenderRule renderRule = null;
             if (geoDataSource instanceof JDBCVectorData) {
-                renderRule = new JDBCRenderRule();
+                renderRule = new JDBCRenderRule(geoDataSource);
             } else if (geoDataSource instanceof Geoms) {
-                renderRule = new GeomsRenderRule();
+                renderRule = new GeomsRenderRule(geoDataSource);
             } else if (geoDataSource instanceof TileData) {
-                renderRule = new TileRule();
+                renderRule = new TileRule(geoDataSource);
             }
 
             renderRule.setDataSource(geoDataSource);

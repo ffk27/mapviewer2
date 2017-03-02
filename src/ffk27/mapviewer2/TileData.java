@@ -22,7 +22,6 @@ public class TileData extends GeoDataSource {
     private BoundingBox bounds;
     public double extent;
     public int minzoom,maxzoom;
-    public Thread collector;
 
     public TileData(String name, int srid, String urlformat, BoundingBox bounds, int minzoom, int maxzoom) {
         super(name,srid);
@@ -87,7 +86,6 @@ public class TileData extends GeoDataSource {
             tile = new Tile(bbox,x,y,z);
             URL url = buildURL(x, y, z);
             try {
-                //-20037508.34
                 if (bounds.contains(bbox)) {
                     System.out.println(url);
                     tile.setImage(ImageIO.read(url));
@@ -101,30 +99,5 @@ public class TileData extends GeoDataSource {
             }
         }
         return tile;
-    }
-
-    public Tile[] getTiles(BoundingBox boundingBox, float zoomlvl) {
-        int z = Math.round(zoomlvl);
-        if (z >= minzoom && z <= maxzoom) {
-            double size = extent * 2 / Math.pow(2, z);
-
-            int xt1 = (int) Math.floor((boundingBox.getMinX() + extent) / size);
-            int xt2 = (int) Math.floor((boundingBox.getMaxX() + extent) / size);
-
-            int yt1 = (int) Math.floor((extent - boundingBox.getMaxY()) / size);
-            int yt2 = (int) Math.floor((extent - boundingBox.getMinY()) / size);
-
-            if (xt2-xt1>0 && yt2-yt1>0) {
-                Tile[] tiles = new Tile[(xt2 - xt1 + 1) * (yt2 - yt1 + 1)];
-                for (int xt = xt1; xt < xt2 + 1; xt++) {
-                    for (int yt = yt1; yt < yt2 + 1; yt++) {
-                        Tile t = getTile(xt, yt, z);
-                        tiles[(xt - xt1) * (yt2 - yt1 + 1) + (yt - yt1)] = t;
-                    }
-                }
-                return tiles;
-            }
-        }
-        return null;
     }
 }

@@ -15,7 +15,7 @@ public class ViewModel {
     public int minZoomlevel=0;
     public int maxZoomlevel=24;
     public float zoomSpeed=0.1f;
-    private double scale = 160000;
+    private double scale = 156543.033906;
     private double unitSize;
     private int srid;
     private Point centerPoint;
@@ -54,6 +54,7 @@ public class ViewModel {
     public void setSrid(int srid) {
         this.srid = srid;
     }
+
     public Coordinate getMapCenter() {
         return mapCenter;
     }
@@ -67,6 +68,10 @@ public class ViewModel {
         Point p = new Point();
         p.setLocation(screenSize.getWidth() / 2, screenSize.getHeight() / 2);
         centerPoint=p;
+    }
+
+    public Dimension getScreenSize() {
+        return screenSize;
     }
 
     public double getUnitSize() {

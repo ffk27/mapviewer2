@@ -97,7 +97,7 @@ public class Controller implements MouseListener, MouseMotionListener, MouseWhee
 
     @Override
     public void componentMoved(ComponentEvent e) {
-
+        componentResized(e);
     }
 
     @Override

@@ -15,6 +15,10 @@ import java.sql.Statement;
  * Created by Gebruiker on 2/18/2017.
  */
 public class JDBCRenderRule extends VectorRenderRule {
+    public JDBCRenderRule(GeoDataSource geoDataSource) {
+        super(geoDataSource);
+    }
+
     @Override
     public void draw(RenderRule renderRule, Graphics2D g2d, Drawer drawer) {
         if (((VectorRenderRule)renderRule).getStyles().size()>0) {
@@ -23,10 +27,10 @@ public class JDBCRenderRule extends VectorRenderRule {
                 try {
                     JDBCConnection.DBType dbType = jdbcVectorData.getJdbcDataTable().getJdbcConnection().getDbType();
                     String geometry_column = jdbcVectorData.getGeometryColumn();
-                    double minX = drawer.getDrawthread().getRenderBox().getMinX();
-                    double minY = drawer.getDrawthread().getRenderBox().getMinY();
-                    double maxX = drawer.getDrawthread().getRenderBox().getMaxX();
-                    double maxY = drawer.getDrawthread().getRenderBox().getMaxY();
+                    double minX = drawer.getBoundingBox().getMinX();
+                    double minY = drawer.getBoundingBox().getMinY();
+                    double maxX = drawer.getBoundingBox().getMaxX();
+                    double maxY = drawer.getBoundingBox().getMaxY();
                     com.vividsolutions.jts.geom.Polygon bboxG = new GeometryFactory().createPolygon(new Coordinate[]{new Coordinate(minX, maxY), new Coordinate(maxX, maxY), new Coordinate(maxX, minY), new Coordinate(minX, minY), new Coordinate(minX, maxY)});
                     String attributes = "";
                     String[] attrarray = ((JDBCRenderRule) renderRule).getAttributes();
@@ -66,7 +70,7 @@ public class JDBCRenderRule extends VectorRenderRule {
                     Statement stmt = jdbcVectorData.getJdbcDataTable().getJdbcConnection().getConnection().createStatement();
                     ResultSet rs = stmt.executeQuery(query);
                     while (rs.next()) {
-                        if (drawer.getDrawthread().isStop()) {
+                        if (drawer.isStop()) {
                             break;
                         }
                         String[] labels = null;

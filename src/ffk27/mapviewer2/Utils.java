@@ -27,6 +27,8 @@ import java.util.regex.Pattern;
  * Created by ffk27 on 15-4-16.
  */
 public class Utils {
+    public static final BoundingBox webmercator = new BoundingBox(-20037508.34,-20037508.34,40075016.68,40075016.68);
+
     public static String geomTypeCode2Name(int code) {
         String name="";
         switch (code) {
