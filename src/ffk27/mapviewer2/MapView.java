@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -21,7 +22,7 @@ public class MapView extends JPanel {
 
     public MapView(Coordinate coordinate, float zoomLevel, int srid) {
         viewModel = new ViewModel();
-        renderRules = new ArrayList<>();
+        renderRules = Collections.synchronizedList(new ArrayList<>());
         viewModel.setMapCenter(coordinate);
         viewModel.setZoomLevel(zoomLevel);
         viewModel.setSrid(srid);
@@ -65,7 +66,7 @@ public class MapView extends JPanel {
             renderer.stopt();
         }
         BoundingBox bboxscreen = viewModel.getBoundingBox();
-        renderer = new Renderer(this,bboxscreen,renderRules,viewModel);
+        renderer = new Renderer(this, bboxscreen, renderRules, viewModel);
     }
 
     public void updateMapImage(RasterImage rasterImage) {

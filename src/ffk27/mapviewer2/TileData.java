@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -29,7 +30,7 @@ public class TileData extends GeoDataSource {
         this.bounds=bounds;
         this.minzoom=minzoom;
         this.maxzoom=maxzoom;
-        tileCache = new ArrayList<>();
+        tileCache = Collections.synchronizedList(new ArrayList<>());
         extent = -1 * bounds.getMinX();
     }
 
@@ -89,7 +90,9 @@ public class TileData extends GeoDataSource {
                 if (bounds.contains(bbox)) {
                     System.out.println(url);
                     tile.setImage(ImageIO.read(url));
-                    tileCache.add(tile);
+                    synchronized (tileCache) {
+                        tileCache.add(tile);
+                    }
                 }
                 else {
                     return null;

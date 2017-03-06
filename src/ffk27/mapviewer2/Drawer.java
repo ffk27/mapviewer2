@@ -46,9 +46,11 @@ public class Drawer extends Thread {
             Graphics2D g2d = rasterImage.getG2D();
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-            for (RenderRule renderRule : renderRules) {
-                if (!stop) {
-                    drawAllRules(renderRule, g2d);
+            synchronized (renderRules) {
+                for (RenderRule renderRule : renderRules) {
+                    if (!stop) {
+                        drawAllRules(renderRule, g2d);
+                    }
                 }
             }
             done(rasterImage);
