@@ -32,38 +32,43 @@ public abstract class VectorRenderRule extends RenderRule {
     protected void drawGeom(Geometry g, String[] labels, Graphics2D g2d, Drawer drawer) {
         Path2D path = new Path2D.Double(Path2D.WIND_EVEN_ODD);
         for (int i = 0; i < g.getNumGeometries(); i++) {
-            if (g.getNumPoints() > 0) {
+            if (!g.isEmpty()) {
                 String geometryType = g.getGeometryN(i).getGeometryType();
                 Point screenpos;
-                if (geometryType == "Point") {
-                    screenpos = Utils.coordinateToPixels(g.getGeometryN(i).getCoordinate(),drawer.getViewModel().getUnitSize(),drawer.getBoundingBox() );
-                    
-                    path.moveTo(screenpos.x,screenpos.y);
-                } else {
-                    if (geometryType == "Polygon") {
-                        com.vividsolutions.jts.geom.Polygon p = (com.vividsolutions.jts.geom.Polygon) g.getGeometryN(i);
-                        screenpos = Utils.coordinateToPixels(p.getExteriorRing().getCoordinates()[0],drawer.getViewModel().getUnitSize(),drawer.getBoundingBox() );
-                        path.moveTo(screenpos.x, screenpos.y);
-                        for (int i2 = 1; i2 < p.getExteriorRing().getCoordinates().length; i2++) {
-                            screenpos = Utils.coordinateToPixels(p.getExteriorRing().getCoordinates()[i2],drawer.getViewModel().getUnitSize(),drawer.getBoundingBox() );
-                            path.lineTo(screenpos.x, screenpos.y);
-                        }
-                        for (int i2 = 0; i2 < p.getNumInteriorRing(); i2++) {
-                            screenpos = Utils.coordinateToPixels(p.getInteriorRingN(i2).getCoordinates()[0],drawer.getViewModel().getUnitSize(),drawer.getBoundingBox() );
+                if (g.getNumGeometries()==1) {
+                    if (geometryType.equals("Point")) {
+                        screenpos = Utils.coordinateToPixels(g.getGeometryN(i).getCoordinate(),drawer.getViewModel().getUnitSize(),drawer.getBoundingBox() );
+                        path.moveTo(screenpos.x,screenpos.y);
+                    }
+                    else {
+                        if (geometryType == "Polygon") {
+                            com.vividsolutions.jts.geom.Polygon p = (com.vividsolutions.jts.geom.Polygon) g.getGeometryN(i);
+                            screenpos = Utils.coordinateToPixels(p.getExteriorRing().getCoordinates()[0],drawer.getViewModel().getUnitSize(),drawer.getBoundingBox() );
                             path.moveTo(screenpos.x, screenpos.y);
-                            for (int i3 = 1; i3 < p.getInteriorRingN(i2).getCoordinates().length; i3++) {
-                                screenpos = Utils.coordinateToPixels(p.getInteriorRingN(i2).getCoordinates()[i3],drawer.getViewModel().getUnitSize(),drawer.getBoundingBox() );
+                            for (int i2 = 1; i2 < p.getExteriorRing().getCoordinates().length; i2++) {
+                                screenpos = Utils.coordinateToPixels(p.getExteriorRing().getCoordinates()[i2],drawer.getViewModel().getUnitSize(),drawer.getBoundingBox() );
+                                path.lineTo(screenpos.x, screenpos.y);
+                            }
+                            for (int i2 = 0; i2 < p.getNumInteriorRing(); i2++) {
+                                screenpos = Utils.coordinateToPixels(p.getInteriorRingN(i2).getCoordinates()[0],drawer.getViewModel().getUnitSize(),drawer.getBoundingBox() );
+                                path.moveTo(screenpos.x, screenpos.y);
+                                for (int i3 = 1; i3 < p.getInteriorRingN(i2).getCoordinates().length; i3++) {
+                                    screenpos = Utils.coordinateToPixels(p.getInteriorRingN(i2).getCoordinates()[i3],drawer.getViewModel().getUnitSize(),drawer.getBoundingBox() );
+                                    path.lineTo(screenpos.x, screenpos.y);
+                                }
+                            }
+                        } else if (geometryType == "LineString") {
+                            screenpos = Utils.coordinateToPixels(g.getGeometryN(i).getCoordinates()[0],drawer.getViewModel().getUnitSize(),drawer.getBoundingBox() );
+                            path.moveTo(screenpos.x, screenpos.y);
+                            for (int i2 = 1; i2 < g.getGeometryN(i).getCoordinates().length; i2++) {
+                                screenpos = Utils.coordinateToPixels(g.getGeometryN(i).getCoordinates()[i2],drawer.getViewModel().getUnitSize(),drawer.getBoundingBox() );
                                 path.lineTo(screenpos.x, screenpos.y);
                             }
                         }
-                    } else if (geometryType == "LineString") {
-                        screenpos = Utils.coordinateToPixels(g.getGeometryN(i).getCoordinates()[0],drawer.getViewModel().getUnitSize(),drawer.getBoundingBox() );
-                        path.moveTo(screenpos.x, screenpos.y);
-                        for (int i2 = 1; i2 < g.getGeometryN(i).getCoordinates().length; i2++) {
-                            screenpos = Utils.coordinateToPixels(g.getGeometryN(i).getCoordinates()[i2],drawer.getViewModel().getUnitSize(),drawer.getBoundingBox() );
-                            path.lineTo(screenpos.x, screenpos.y);
-                        }
                     }
+                }
+                else {
+                    drawGeom(g.getGeometryN(i),labels,g2d,drawer);
                 }
             }
         }

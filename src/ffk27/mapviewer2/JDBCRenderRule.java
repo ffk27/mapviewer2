@@ -7,6 +7,7 @@ import com.vividsolutions.jts.io.WKBReader;
 import javafx.geometry.BoundingBox;
 
 import java.awt.*;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -41,14 +42,17 @@ public class JDBCRenderRule extends VectorRenderRule {
                     }
                     String bbox = "ST_Transform(ST_GeomFromText('" + bboxG.toText() + "'," + drawer.getViewModel().getSrid() + ")," + drawer.getViewModel().getSrid() + ")";
                     String query = "SELECT ST_AsBinary(ST_Transform(" + geometry_column + "," + drawer.getViewModel().getSrid() + ")) " + attributes + " FROM " + jdbcVectorData.getJdbcDataTable().getTableName() + " WHERE ";
+
                     if (dbType == JDBCConnection.DBType.H2 || dbType == JDBCConnection.DBType.PostgreSQL) {
                         query += geometry_column + " && " + bbox;
                     } else if (dbType == JDBCConnection.DBType.SQLite) {
                         query += "ROWID IN (SELECT ROWID FROM SpatialIndex WHERE f_table_name='" + jdbcVectorData.getJdbcDataTable().getTableName() + "' AND f_geometry_column='" + geometry_column + "' AND search_frame=" + bbox + ")";
                     }
+
                     if (dbType == JDBCConnection.DBType.H2 || dbType == JDBCConnection.DBType.SQLite) {
                         query += " AND (ST_Intersects(" + geometry_column + "," + bbox + "))";
                     }
+
                     if (((VectorRenderRule) renderRule).getGeomType() != 0) {
                         query += " AND ST_GeometryType(" + geometry_column + ")='";
                         String gtype = Utils.geomTypeCode2Name(((VectorRenderRule) renderRule).getGeomType());
@@ -66,8 +70,8 @@ public class JDBCRenderRule extends VectorRenderRule {
                     }
                     query += ";";
                     //System.out.println(query);
-
-                    Statement stmt = jdbcVectorData.getJdbcDataTable().getJdbcConnection().getConnection().createStatement();
+                    Connection connection = jdbcVectorData.getJdbcDataTable().getJdbcConnection().getConnection();
+                    Statement stmt = connection.createStatement();
                     ResultSet rs = stmt.executeQuery(query);
                     while (rs.next()) {
                         if (drawer.isStop()) {
@@ -84,11 +88,12 @@ public class JDBCRenderRule extends VectorRenderRule {
                     }
                     rs.close();
                     stmt.close();
-                } catch (SQLException se) {
+                } catch(SQLException se){
                     se.printStackTrace();
-                } catch (ParseException pe) {
+                } catch(ParseException pe){
                     pe.printStackTrace();
                 }
+
             } else {
                 System.out.println("Error: No or invalid data source");
             }

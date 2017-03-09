@@ -70,10 +70,6 @@ public class TileData extends GeoDataSource {
         return null;
     }
 
-    public List<Tile> getTileCache() {
-        return tileCache;
-    }
-
     public Tile getTile(int x, int y, int z) {
         Tile tile = tileInCache(x,y,z);
         if (tile!=null) {
