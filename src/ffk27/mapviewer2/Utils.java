@@ -54,7 +54,38 @@ public class Utils {
                 name="MultiPolygon";
                 break;
             case 7:
-                name="GeometryCollection"; // Unsupported yet
+                name="GeometryCollection";
+                break;
+            //Below unsupported.
+            case 8:
+                name="CircularString";
+                break;
+            case 9:
+                name="CompoundCurve";
+                break;
+            case 10:
+                name="CurvePolygon";
+                break;
+            case 11:
+                name="MultiCurve";
+                break;
+            case 12:
+                name="MultiSurface";
+                break;
+            case 13:
+                name="Curve";
+                break;
+            case 14:
+                name="Surface";
+                break;
+            case 15:
+                name="PolyhedralSurface";
+                break;
+            case 16:
+                name="TIN";
+                break;
+            case 17:
+                name="Triangle";
                 break;
         }
         return name;

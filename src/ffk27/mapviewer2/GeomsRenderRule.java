@@ -8,8 +8,8 @@ import java.awt.*;
  * Created by Gebruiker on 2/18/2017.
  */
 public class GeomsRenderRule extends VectorRenderRule {
-    public GeomsRenderRule(GeoDataSource geoDataSource) {
-        super(geoDataSource);
+    public GeomsRenderRule(GeoDataSource geoDataSource, RuleType ruleType) {
+        super(geoDataSource, ruleType);
     }
 
     @Override

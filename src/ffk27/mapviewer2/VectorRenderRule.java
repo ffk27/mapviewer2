@@ -1,17 +1,9 @@
 package ffk27.mapviewer2;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKBReader;
-import javafx.geometry.BoundingBox;
 
 import java.awt.*;
 import java.awt.geom.Path2D;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -25,8 +17,8 @@ public abstract class VectorRenderRule extends RenderRule {
     protected List<Style> styles;
     protected int geomType;
 
-    public VectorRenderRule(GeoDataSource geoDataSource) {
-        super(geoDataSource);
+    public VectorRenderRule(GeoDataSource geoDataSource, RuleType ruleType) {
+        super(geoDataSource,ruleType);
     }
 
     protected void drawGeom(Geometry g, String[] labels, Graphics2D g2d, Drawer drawer) {
@@ -68,6 +60,7 @@ public abstract class VectorRenderRule extends RenderRule {
                     }
                 }
                 else {
+                    //Geometryollections in geometrycollections
                     drawGeom(g.getGeometryN(i),labels,g2d,drawer);
                 }
             }
@@ -160,16 +153,13 @@ public abstract class VectorRenderRule extends RenderRule {
     public static VectorRenderRule createRandom(GeoDataSource geoDataSource, int geomType) {
         VectorRenderRule vectorRenderRule=null;
         if (geoDataSource instanceof JDBCVectorData) {
-            vectorRenderRule=new JDBCRenderRule(geoDataSource);
+            vectorRenderRule=new JDBCRenderRule(geoDataSource,RuleType.SOURCE);
         }
         else {
-            vectorRenderRule = new GeomsRenderRule(geoDataSource);
+            vectorRenderRule = new GeomsRenderRule(geoDataSource,RuleType.SOURCE);
         }
         vectorRenderRule.setDataSource(geoDataSource);
-        Color fill=null;
-        if (geomType!=2 && geomType!=5) {
-            fill = new Color(new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1f);
-        }
+        Color fill = new Color(new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1f);
         Style s = new Style(vectorRenderRule,fill,Color.BLACK,new BasicStroke(1f));
         List<Style> styles = new ArrayList<>();
         styles.add(s);

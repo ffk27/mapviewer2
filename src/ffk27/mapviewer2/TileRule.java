@@ -12,7 +12,7 @@ import java.util.*;
  */
 public class TileRule extends RenderRule {
     public TileRule(GeoDataSource geoDataSource) {
-        super(geoDataSource);
+        super(geoDataSource,RuleType.SOURCE);
     }
 
     @Override

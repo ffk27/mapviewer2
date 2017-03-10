@@ -16,8 +16,8 @@ import java.sql.Statement;
  * Created by Gebruiker on 2/18/2017.
  */
 public class JDBCRenderRule extends VectorRenderRule {
-    public JDBCRenderRule(GeoDataSource geoDataSource) {
-        super(geoDataSource);
+    public JDBCRenderRule(GeoDataSource geoDataSource, RuleType ruleType) {
+        super(geoDataSource,ruleType);
     }
 
     @Override

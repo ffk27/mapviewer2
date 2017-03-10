@@ -16,6 +16,7 @@ import java.util.List;
  * Created by ffk27 on 9-8-16.
  */
 public abstract class RenderRule {
+    private RuleType ruleType;
     private boolean enabled;
     protected RenderRule parent;
     protected List<RenderRule> rules;
@@ -23,9 +24,16 @@ public abstract class RenderRule {
     protected float zoommin;
     protected float zoommax;
 
-    public RenderRule(GeoDataSource geoDataSource) {
+    public RenderRule(GeoDataSource geoDataSource, RuleType ruleType) {
         this.dataSource=geoDataSource;
+        this.ruleType=ruleType;
         enabled = true;
+    }
+
+    public enum RuleType { SOURCE, RULE, IF, ELSEIF, ELSE }
+
+    public RuleType getRuleType() {
+        return ruleType;
     }
 
     public boolean isEnabled() {
@@ -117,12 +125,14 @@ public abstract class RenderRule {
             geoDataSource=parent.getDataSource();
         }
 
+        RuleType ruleType = getRuleType(nRule.getNodeName());
+
         if (geoDataSource != null) {
             RenderRule renderRule = null;
             if (geoDataSource instanceof JDBCVectorData) {
-                renderRule = new JDBCRenderRule(geoDataSource);
+                renderRule = new JDBCRenderRule(geoDataSource,ruleType);
             } else if (geoDataSource instanceof Geoms) {
-                renderRule = new GeomsRenderRule(geoDataSource);
+                renderRule = new GeomsRenderRule(geoDataSource,ruleType);
             } else if (geoDataSource instanceof TileData) {
                 renderRule = new TileRule(geoDataSource);
             }
@@ -205,8 +215,8 @@ public abstract class RenderRule {
             boolean hasChilds = false;
             List<RenderRule> styleRules = null;
             for (int i = 0; i < nRule.getChildNodes().getLength(); i++) {
-                String nodeName = nRule.getChildNodes().item(i).getNodeName().toLowerCase();
-                if (nodeName.equals("rule") || nodeName.equals("if") || nodeName.equals("elseif") || nodeName.equals("else")) {
+                ruleType = getRuleType(nRule.getChildNodes().item(i).getNodeName());
+                if (ruleType != null) {
                     hasChilds = true;
                     if (styleRules == null) {
                         styleRules = new ArrayList<>();
@@ -274,5 +284,28 @@ public abstract class RenderRule {
             return attrs;
         }
         return attributes;
+    }
+
+    private static RuleType getRuleType(String nodeName) {
+        RuleType ruleType = null;
+        nodeName = nodeName.toLowerCase();
+        switch (nodeName) {
+            case "source":
+                ruleType=RuleType.SOURCE;
+                break;
+            case "rule":
+                ruleType=RuleType.RULE;
+                break;
+            case "if":
+                ruleType=RuleType.IF;
+                break;
+            case "elseif":
+                ruleType=RuleType.ELSEIF;
+                break;
+            case "else":
+                ruleType=RuleType.ELSE;
+                break;
+        }
+        return ruleType;
     }
 }
