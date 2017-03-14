@@ -1,4 +1,4 @@
-# gisviewer
+# mapviewer
 - Supports PostGIS, H2 and more.
 - Basic and easy cartography styling.
 - Map tiles
