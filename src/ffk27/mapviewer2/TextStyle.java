@@ -9,8 +9,8 @@ public class TextStyle extends Style {
     private String format;
     private Font font;
 
-    public TextStyle(VectorRenderRule vectorRenderRule, Color fill, Color line, Stroke stroke, String format, Font font) {
-        super(vectorRenderRule, fill, line, stroke);
+    public TextStyle(VectorRenderRule vectorRenderRule, Color fill, Color line, String strokeWidth, String format, Font font) {
+        super(vectorRenderRule, fill, line, strokeWidth);
         this.format=format;
         this.font=font;
     }
@@ -21,5 +21,10 @@ public class TextStyle extends Style {
 
     public Font getFont() {
         return font;
+    }
+
+    @Override
+    public void updateSizes(double unitSize) {
+        super.updateSizes(unitSize);
     }
 }

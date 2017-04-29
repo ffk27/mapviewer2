@@ -176,38 +176,32 @@ public abstract class RenderRule {
                         Color fill = Utils.getAttributeColor("fill", attributes);
                         Color line = Utils.getAttributeColor("stroke", attributes);
                         String strokewidth = Utils.getAttributeStringValue("stroke-width", attributes);
-                        Stroke stroke = null;
                         if (strokewidth != null) {
                             strokewidth = strokewidth.trim();
-                            if (strokewidth.endsWith("px")) {
-
-                            } else if (strokewidth.endsWith("em")) {
-
-                            } else if (strokewidth.endsWith("%")) {
-
-                            } else {
-                                stroke = new BasicStroke(Float.parseFloat(strokewidth), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-                            }
                         }
-                        if (nodename.equals("path")) {
-                            vectorRenderRule.getStyles().add(new Style(vectorRenderRule, fill, line, stroke));
-                        } else if (nodename.equals("circle")) {
-                            float radius = Utils.getAttributeFloatValue("radius", attributes);
-                            vectorRenderRule.getStyles().add(new CircleStyle(vectorRenderRule, fill, line, stroke, radius));
-                        } else if (nodename.equals("text")) {
-                            String format = Utils.getAttributeStringValue("format", attributes);
-                            String fontfamily = Utils.getAttributeStringValue("font-family", attributes);
-                            String fontstyle = Utils.getAttributeStringValue("font-style", attributes);
-                            int fstyle = 0;
-                            if (fontstyle.contains("bold")) {
-                                fstyle = fstyle | Font.BOLD;
-                            }
-                            if (fontstyle.contains("italic")) {
-                                fstyle = fstyle | Font.ITALIC;
-                            }
-                            int fontsize = Utils.getAttributeIntValue("font-size", attributes);
-                            Font font = new Font(fontfamily, fstyle, fontsize);
-                            vectorRenderRule.getStyles().add(new TextStyle(vectorRenderRule, fill, line, stroke, format, font));
+                        switch (nodename) {
+                            case "path":
+                                vectorRenderRule.getStyles().add(new PathStyle(vectorRenderRule, fill, line, strokewidth));
+                                break;
+                            case "circle":
+                                String radius = Utils.getAttributeStringValue("radius", attributes);
+                                vectorRenderRule.getStyles().add(new CircleStyle(vectorRenderRule, fill, line, strokewidth, radius));
+                                break;
+                            case "text":
+                                String format = Utils.getAttributeStringValue("format", attributes);
+                                String fontfamily = Utils.getAttributeStringValue("font-family", attributes);
+                                String fontstyle = Utils.getAttributeStringValue("font-style", attributes);
+                                int fstyle = 0;
+                                if (fontstyle.contains("bold")) {
+                                    fstyle = fstyle | Font.BOLD;
+                                }
+                                if (fontstyle.contains("italic")) {
+                                    fstyle = fstyle | Font.ITALIC;
+                                }
+                                int fontsize = Utils.getAttributeIntValue("font-size", attributes);
+                                Font font = new Font(fontfamily, fstyle, fontsize);
+                                vectorRenderRule.getStyles().add(new TextStyle(vectorRenderRule, fill, line, strokewidth, format, font));
+                                break;
                         }
                     }
                 }

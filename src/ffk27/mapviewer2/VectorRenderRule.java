@@ -74,9 +74,14 @@ public abstract class VectorRenderRule extends RenderRule {
         Point centroid = new Point((int)path.getBounds().getCenterX(),(int)path.getBounds().getCenterY());
         if (style instanceof CircleStyle) {
             CircleStyle cstyle = (CircleStyle) style;
+            int x = centroid.x - cstyle.getRadiusPixels();
+            int y = centroid.y - cstyle.getRadiusPixels();
+            int width = cstyle.getRadiusPixels() * 2;
+            int height = width;
+
             if (style.getFill() != null) {
                 g2d.setColor(style.getFill());
-                g2d.fillOval(centroid.x - (int)cstyle.getRadius(), centroid.y - (int)cstyle.getRadius(), (int)cstyle.getRadius() * 2, (int)cstyle.getRadius() * 2);
+                g2d.fillOval(x, y, width, height);
             }
 
             if (style.getLine() != null) {
@@ -86,7 +91,7 @@ public abstract class VectorRenderRule extends RenderRule {
                 } else {
                     g2d.setStroke(new BasicStroke(1f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
                 }
-                g2d.drawOval(centroid.x - (int)cstyle.getRadius(), centroid.y - (int)cstyle.getRadius(), (int)cstyle.getRadius() * 2, (int)cstyle.getRadius() * 2);
+                g2d.drawOval(x,y,width,height);
             }
         } else if (style instanceof TextStyle) {
             if (((TextStyle)style).getFormat()!=null && !((TextStyle)style).getFormat().isEmpty()) {
@@ -115,8 +120,7 @@ public abstract class VectorRenderRule extends RenderRule {
                     g2d.drawString(texts[i], centroid.x - metrics.stringWidth(texts[i]) / 2, y);
                 }
             }
-        }
-        if (style instanceof Style) {
+        } else if (style instanceof PathStyle) {
             if (style.getFill() != null) {
                 g2d.setColor(style.getFill());
                 g2d.fill(path);
@@ -160,7 +164,7 @@ public abstract class VectorRenderRule extends RenderRule {
         }
         vectorRenderRule.setDataSource(geoDataSource);
         Color fill = new Color(new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1f);
-        Style s = new Style(vectorRenderRule,fill,Color.BLACK,new BasicStroke(1f));
+        Style s = new PathStyle(vectorRenderRule,fill,Color.BLACK,"1px");
         List<Style> styles = new ArrayList<>();
         styles.add(s);
         vectorRenderRule.setStyles(styles);

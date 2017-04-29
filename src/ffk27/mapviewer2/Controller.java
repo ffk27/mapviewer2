@@ -74,7 +74,7 @@ public class Controller implements MouseListener, MouseMotionListener, MouseWhee
     private void zoomIn(Point p) {
         if (mapView.getViewModel().getZoomLevel()<mapView.getViewModel().maxZoomlevel) {
             Coordinate c = mapView.getViewModel().pixelsToCoordinate(p);
-            mapView.getViewModel().setZoomLevel(Utils.round(mapView.getViewModel().getZoomLevel()+mapView.getViewModel().zoomSpeed,1));
+            mapView.getViewModel().setZoomLevel(Utils.round(mapView.getViewModel().getZoomLevel()+mapView.getViewModel().zoomSpeed,1),mapView.getRenderRules());
             Coordinate c2 = mapView.getViewModel().pixelsToCoordinate(p);
             mapView.changeMapCenter(new Coordinate(mapView.getViewModel().getMapCenter().x+c.x-c2.x,mapView.getViewModel().getMapCenter().y+c.y-c2.y));
         }
@@ -83,7 +83,7 @@ public class Controller implements MouseListener, MouseMotionListener, MouseWhee
     private void zoomOut(Point p) {
         if (mapView.getViewModel().getZoomLevel()>mapView.getViewModel().minZoomlevel) {
             Coordinate c = mapView.getViewModel().pixelsToCoordinate(p);
-            mapView.getViewModel().setZoomLevel(Utils.round(mapView.getViewModel().getZoomLevel()-mapView.getViewModel().zoomSpeed,1));
+            mapView.getViewModel().setZoomLevel(Utils.round(mapView.getViewModel().getZoomLevel()-mapView.getViewModel().zoomSpeed,1),mapView.getRenderRules());
             Coordinate c2 = mapView.getViewModel().pixelsToCoordinate(p);
             mapView.changeMapCenter(new Coordinate(mapView.getViewModel().getMapCenter().x-(c2.x-c.x),mapView.getViewModel().getMapCenter().y-(c2.y-c.y)));
         }

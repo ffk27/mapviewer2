@@ -10,12 +10,13 @@ public class Style {
     private Color fill;
     private Color line;
     private Stroke stroke;
+    private String strokeWidth;
 
-    public Style(VectorRenderRule vectorRenderRule, Color fill, Color line, Stroke stroke) {
+    public Style(VectorRenderRule vectorRenderRule, Color fill, Color line, String strokeWidth) {
         this.vectorRenderRule = vectorRenderRule;
         this.fill = fill;
         this.line = line;
-        this.stroke = stroke;
+        this.strokeWidth = strokeWidth;
     }
 
     public VectorRenderRule getStyleRule() {
@@ -32,5 +33,15 @@ public class Style {
 
     public Stroke getStroke() {
         return stroke;
+    }
+
+    public void updateSizes(double unitSize) {
+        if (strokeWidth!=null) {
+            if (strokeWidth.contains("px")) {
+                stroke = new BasicStroke(Integer.parseInt(strokeWidth.split("px")[0]), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+            } else {
+                stroke = new BasicStroke(Math.round(Utils.unitToPixel(Double.parseDouble(strokeWidth), unitSize)), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+            }
+        }
     }
 }

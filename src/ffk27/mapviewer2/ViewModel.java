@@ -28,9 +28,16 @@ public class ViewModel {
         return zoomLevel;
     }
 
-    public void setZoomLevel(float zoomLevel) {
+    public void setZoomLevel(float zoomLevel, java.util.List<RenderRule> renderRules) {
         this.zoomLevel = zoomLevel;
         unitSize=Math.pow(2,zoomLevel)/scale;
+        updateStyles(renderRules);
+    }
+
+    public void updateStyles(java.util.List<RenderRule> renderRules) {
+        for (RenderRule renderRule : renderRules) {
+            updateStylesSizes(renderRule);
+        }
     }
 
     public Coordinate pixelsToCoordinate(Point p) {
@@ -76,5 +83,18 @@ public class ViewModel {
 
     public double getUnitSize() {
         return unitSize;
+    }
+
+    private void updateStylesSizes(RenderRule renderRule) {
+        if (renderRule instanceof VectorRenderRule) {
+            for (Style style : ((VectorRenderRule) renderRule).getStyles()) {
+                style.updateSizes(unitSize);
+            }
+        }
+        if (renderRule.getRules()!=null) {
+            for (RenderRule r : renderRule.getRules()) {
+                updateStylesSizes(r);
+            }
+        }
     }
 }

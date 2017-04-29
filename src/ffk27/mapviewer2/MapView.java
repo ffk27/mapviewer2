@@ -24,7 +24,7 @@ public class MapView extends JPanel {
         viewModel = new ViewModel();
         renderRules = Collections.synchronizedList(new ArrayList<>());
         viewModel.setMapCenter(coordinate);
-        viewModel.setZoomLevel(zoomLevel);
+        viewModel.setZoomLevel(zoomLevel,renderRules);
         viewModel.setSrid(srid);
         new Controller(this);
     }
@@ -34,8 +34,12 @@ public class MapView extends JPanel {
         repaint();
     }
 
+    public List<RenderRule> getRenderRules() {
+        return renderRules;
+    }
+
     public void changeZoomLevel(float zoomLevel) {
-        viewModel.setZoomLevel(zoomLevel);
+        viewModel.setZoomLevel(zoomLevel,renderRules);
         repaint();
     }
 
@@ -76,6 +80,7 @@ public class MapView extends JPanel {
 
     public void setRenderRules(List<RenderRule> renderRules) {
         this.renderRules = renderRules;
+        viewModel.updateStyles(renderRules);
         repaint();
     }
 
@@ -85,6 +90,7 @@ public class MapView extends JPanel {
 
     public void addRenderRule(RenderRule renderRule) {
         renderRules.add(renderRule);
+        viewModel.updateStyles(renderRules);
         repaint();
     }
 }
